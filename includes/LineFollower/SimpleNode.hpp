@@ -32,6 +32,13 @@ namespace AASS{
 
 		class SimpleEdge{
 		public:
+			std::vector< std::pair<int, int> > line;
+			
+			SimpleEdge(){};
+			
+			void addEdgePosition(int x, int y) {line.push_back(std::pair< int, int> (x, y));}
+			void setLine(const std::vector< std::pair<int, int> >& l){line = l;}
+			std::vector< std::pair<int, int> >& getLine(){return line;}
 		};
 
 		

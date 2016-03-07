@@ -38,6 +38,9 @@ namespace AASS{
 // 			std::deque<cv::Point2i> _all_crossings;	
 			
 			
+			std::vector< std::pair<int, int> > _line;
+			
+			
 		public:
 			
 			LineFollowerGraph() :LineFollower(){};
@@ -70,6 +73,7 @@ namespace AASS{
 			
 			
 		protected:
+			void moveForward();
 			void setDynamicWindow(cv::Mat& m){_W = m;}
 			
 			/**
@@ -116,9 +120,14 @@ namespace AASS{
 // 				std::cout << "AT " << p_dyn_window.x << " " << p_dyn_window.y << std::endl;
 // 				std::cout <<" dad " << _graph[vertex_parent].getX()<< " " << _graph[vertex_parent].getY() << std::endl;
 				SimpleNode vtype;
-				vtype.setX(p_dyn_window.x);
-				vtype.setY(p_dyn_window.y);
-				_graph.addVertex(vertex_out, vertex_parent, vtype);
+				vtype.setX(p_dyn_window.x + (_W.size().width/2));
+				vtype.setY(p_dyn_window.y + (_W.size().height/2));
+				
+				SimpleEdge sed;
+				sed.setLine(_line);
+				_line.clear();
+				
+				_graph.addVertex(vertex_out, vertex_parent, vtype, sed);
 							
 			}
 			
@@ -128,8 +137,8 @@ namespace AASS{
 				_W.locateROI(s, p_dyn_window);
 // 				std::cout << "AT " << p_dyn_window.x << " " << p_dyn_window.y << std::endl;
 				SimpleNode vtype;
-				vtype.setX(p_dyn_window.x);
-				vtype.setY(p_dyn_window.y);
+				vtype.setX(p_dyn_window.x + (_W.size().width/2));
+				vtype.setY(p_dyn_window.y + (_W.size().height/2));
 				_graph.addVertex(vertex_out, vtype);
 			}
 			
@@ -154,6 +163,8 @@ namespace AASS{
 				cv::Point2i p;
 				cv::Size s;
 				_W.locateROI(s, p);
+				
+				_line.push_back(std::pair<int, int>(p.x, p.y));
 				
 				_last_drawing_point = cv::Point(p.x + (_W.rows/2), p.y + (_W.cols/2));
 				
@@ -262,7 +273,10 @@ namespace AASS{
 						if(new_dad != dad_vertex){
 // 							boost::add_edge(loop_index, index , _graph);
 							bettergraph::PseudoGraph<SimpleNode, SimpleEdge>::Edge ed;
-							_graph.addEdge(new_dad, dad_vertex, ed);
+							SimpleEdge sed;
+							sed.setLine(_line);
+							_line.clear();
+							_graph.addEdge(new_dad, dad_vertex, ed, sed);
 // 							printGraph();
 // 							cv::waitKey(0);
 						}
@@ -332,7 +346,10 @@ namespace AASS{
 							if(loop_vertex != dad_vertex){
 	// 							boost::add_edge(loop_index, index , _graph);
 								bettergraph::PseudoGraph<SimpleNode, SimpleEdge>::Edge ed;
-								_graph.addEdge(loop_vertex, dad_vertex, ed);
+								SimpleEdge sed;
+								sed.setLine(_line);
+								_line.clear();
+								_graph.addEdge(loop_vertex, dad_vertex, ed, sed);
 	// 							printGraph();
 	// 							cv::waitKey(0);
 							}
@@ -390,7 +407,10 @@ namespace AASS{
 							if(loop_vertex != dad_vertex){
 	// 							boost::add_edge(loop_index, index , _graph);
 								bettergraph::PseudoGraph<SimpleNode, SimpleEdge>::Edge ed;
-								_graph.addEdge(loop_vertex, dad_vertex, ed);
+								SimpleEdge sed;
+								sed.setLine(_line);
+								_line.clear();
+								_graph.addEdge(loop_vertex, dad_vertex, ed, sed);
 	// 							printGraph();
 								dad_vertex = loop_vertex;
 	// 							cv::waitKey(0);
@@ -544,12 +564,21 @@ namespace AASS{
 					dad_vertex = _dad_vertex[i];
 					return true;
 				}
-				return false;
 			}
+			return false;
 		}
 
 
-		
+		inline void LineFollowerGraph::moveForward()
+		{
+			LineFollower::moveForward();
+			cv::Point2i p;
+			cv::Size s;
+			_W.locateROI(s, p);
+			_line.push_back(std::pair<int, int>(p.x + (_W.size().width/2), p.y + (_W.size().height/2)));
+
+		}
+
 	}
 }
 

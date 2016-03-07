@@ -59,17 +59,33 @@ inline void draw(bettergraph::PseudoGraph<AASS::VoDiGrEx::SimpleNode, AASS::VoDi
 			out_i != out_end; ++out_i) {
 // 				std::cout << "NEW Edge" << std::endl;
 			e = *out_i;
-			bettergraph::PseudoGraph<AASS::VoDiGrEx::SimpleNode, AASS::VoDiGrEx::SimpleEdge>::Vertex src = boost::source(e, graph.getGraph()), targ = boost::target(e, graph.getGraph());
+// 			bettergraph::PseudoGraph<AASS::VoDiGrEx::SimpleNode, AASS::VoDiGrEx::SimpleEdge>::Vertex src = boost::source(e, graph.getGraph()), targ = boost::target(e, graph.getGraph());
+// 			
+// 			cv::Point2i pp_source;
+// 			pp_source.x = graph[src].getX();
+// 			pp_source.y = graph[src].getY();
+// 			
+// 			cv::Point2i pp_target;
+// 			pp_target.x = graph[targ].getX();
+// 			pp_target.y = graph[targ].getY();
+// 			
+// 			cv::line(m, pp_source, pp_target, color);
 			
-			cv::Point2i pp_source;
-			pp_source.x = graph[src].getX();
-			pp_source.y = graph[src].getY();
-			
-			cv::Point2i pp_target;
-			pp_target.x = graph[targ].getX();
-			pp_target.y = graph[targ].getY();
-			
-			cv::line(m, pp_source, pp_target, color);
+			for(size_t i = 0 ; i < graph[e].getLine().size() ; ++i){
+				cv::Scalar color;
+				if(m.channels() == 1){
+					color = 155;
+				}
+				else if(m.channels() == 3){
+					color[1] =150;
+					color[2] =55;
+					color[3] = 55; 
+				}
+				cv::Point2i pp;
+				pp.x = graph[e].getLine()[i].first;
+				pp.y = graph[e].getLine()[i].second;
+				cv::circle(m, pp, 2, color);
+			}
 		}
 		
 	}
@@ -94,8 +110,15 @@ int main(){
 // 	maa_33.setTo(cv::Scalar(0));
 // 	llll_3.drawGraph(maa_3);
 	
+	bettergraph::PseudoGraph<AASS::VoDiGrEx::SimpleNode, AASS::VoDiGrEx::SimpleEdge> graph11 = llll_3.getGraph();
+	
+	cv::Mat maa_31 = line.clone();
+	maa_31.setTo(cv::Scalar(0));
+	draw(graph11, maa_31);
+	
 	cv::imshow("yoooo", llll_3.getResult());
-	cv::imshow("graph", line);
+// 	cv::imshow("graph", line);
+	cv::imshow("graph11", maa_31);
 	cv::waitKey(0);
 	
 // 	AASS::VoDiGrEx::LineFollower llll_3;
