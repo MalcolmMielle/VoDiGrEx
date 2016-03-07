@@ -276,7 +276,7 @@ namespace AASS{
 							SimpleEdge sed;
 							sed.setLine(_line);
 							_line.clear();
-							_graph.addEdge(new_dad, dad_vertex, ed, sed);
+							_graph.addEdge(ed, new_dad, dad_vertex, sed);
 // 							printGraph();
 // 							cv::waitKey(0);
 						}
@@ -349,7 +349,7 @@ namespace AASS{
 								SimpleEdge sed;
 								sed.setLine(_line);
 								_line.clear();
-								_graph.addEdge(loop_vertex, dad_vertex, ed, sed);
+								_graph.addEdge(ed, loop_vertex, dad_vertex, sed);
 	// 							printGraph();
 	// 							cv::waitKey(0);
 							}
@@ -410,7 +410,7 @@ namespace AASS{
 								SimpleEdge sed;
 								sed.setLine(_line);
 								_line.clear();
-								_graph.addEdge(loop_vertex, dad_vertex, ed, sed);
+								_graph.addEdge(ed, loop_vertex, dad_vertex, sed);
 	// 							printGraph();
 								dad_vertex = loop_vertex;
 	// 							cv::waitKey(0);
