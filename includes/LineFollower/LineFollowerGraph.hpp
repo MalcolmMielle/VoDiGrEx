@@ -74,29 +74,9 @@ namespace AASS{
 			
 		protected:
 			void moveForward();
-			void setDynamicWindow(cv::Mat& m){_W = m;}
-			
-			/**
-			*@brief This function return the number of line crossing in a square.
-			* 1 means a (at init : dead else line)
-			* 2 means a (at init : line else T crossing)
-			* more means a N crossing
-			* 0 means that we are not completely on at least one of the branch
-			* -1 means that there is no line at all
-			* -2 means that we can only see white
-			*/
-// 			int typeOfIntersection(cv::Mat& roi);
+			void setDynamicWindow(cv::Mat& m){_W = m;}		
 			void init();
-			
-			/**
-			 * @brief move the dynamic window forward and resize it to match the new anchor points
-			 */
-// 			void moveForward();
-// 			void drawLine();
-// 			bool findNextLPRP(std::vector< cv::Point2i >& all_points);
 			void addPoint2Explore(const std::vector< cv::Point2i >& all_points, const Vertex& loop);
-// 			void removeLineSegment(cv::Mat& c);
-// 			void upResize();
 
 			/**
 			* @brief line thining algorithm after init.
@@ -153,23 +133,12 @@ namespace AASS{
 		// 		std::cout << "Init " << std::endl;
 				//Build the first ROI
 				init();
-				//labelSegments();
-			
-		// 			std::cout << "out of init " << std::endl;
-				
-				//TODO need to be more global than that.
-				//This find new points
-				//Init the first drawing point
 				cv::Point2i p;
 				cv::Size s;
 				_W.locateROI(s, p);
-				
 				_line.push_back(std::pair<int, int>(p.x, p.y));
-				
 				_last_drawing_point = cv::Point(p.x + (_W.rows/2), p.y + (_W.cols/2));
-				
-		// 			std::cout << "We start " << " at " << p.x << " " << p.y << " dyn wind " << _W.rows << " " << _W.cols << " draw oint " << _last_drawing_point << std::endl;
-				
+								
 				std::vector<cv::Point2i> all_point;
 				findNextLPRP(all_point);
 				_LP = all_point[0];
@@ -180,13 +149,11 @@ namespace AASS{
 				cv::Mat m = _W.clone();
 				//Is a dead end
 				if(all_point.size() == 2){
-// 					VertexType vtype = _vertex_maker.make(this);
 					addVertex(dad);
 					lineThinningAlgo(dad);
 				}
 				//Line
 				else{
-// 						VertexType vtype = _vertex_maker.make(this);
 					addVertex(dad);
 					addPoint2Explore(all_point, dad);
 					lineThinningAlgo(dad);					
@@ -201,14 +168,7 @@ namespace AASS{
 		
 		inline void LineFollowerGraph::lineThinningAlgo(Vertex& index_dad)
 		{
-			
-	// 		std::cout << "line Thining algo vrai" << std::endl;
-			
-	// 		printGraph();
-	// 		printIntersection();
-	// 		std::cout << "Value " << _graph.getGraph()[index_dad].point.x << std::endl;
-			
-	// 		int index = index_dad;
+
 			Vertex dad_vertex = index_dad;
 			while(_LP.x != -1 && _LP.y != -1){
 				
@@ -219,13 +179,7 @@ namespace AASS{
 					upResize();
 					type = typeOfIntersection(_W);
 				}
-				
-	// 			std::cout << "RP : "<< _RP <<std::endl;
-				
-	// 			std::cout << "after while"<< " " << _LP.x << " " << _LP.y << " type " << type << std::endl;
-	// 			std::cout << " W is this : " << _W << std::endl << " type " << type  << std::endl;
-	// 			printIntersection();
-				
+
 				std::vector<cv::Point2i> all_point;
 				bool non_dead_end = findNextLPRP(all_point);
 				
@@ -236,49 +190,25 @@ namespace AASS{
 				cv::Point2i new_p;
 				new_p.x = p_dyn_window.x + (_W.cols / 2);
 				new_p.y = p_dyn_window.y + (_W.rows / 2);
-					
-	// 			std::cout << "Size points is : " << all_point.size() << std::endl;
-	// 			printIntersection();
-	// 			std::cout << "And we are at LP " << _LP.x << " " << _LP.y << " RP "<< _RP.x << " " << _RP.y  << " type " << type << std::endl;
-				if( all_point.size() > 2 ){
-// 					std::cout << "HOY INTERSECTION : " << type << std::endl;
-// 					std::cout <<" dad " << _graph[dad_vertex].getX()<< " " << _graph[dad_vertex].getY() << std::endl;
-					
-// 					cv::Mat m = _W.clone();
-// 					cv::imshow("intersection", _W);
-// 					cv::waitKey(0);
 
-	// 				//Find all possible lines. this function check as well if we need to take a "large view" on the intersection (risk of false positive if the _W is small)
-	// 				std::cout << "Loop detection in FIND NEXT LPRP" << std::endl;
-// 					std::cout <<" dad " << _graph[dad_vertex].getX()<< " " << _graph[dad_vertex].getY() << std::endl;
+				if( all_point.size() > 2 ){
 					
 					//USE : _all_crossings
 					Vertex new_dad;
 					bool already_exist = loopDetection(new_p, new_dad);
-					
-// 					std::cout <<" dad " << _graph[dad_vertex].getX()<< " " << _graph[dad_vertex].getY() << std::endl;
-					
-	// 				std::cout << "Before value" << std::endl;
-	// 				std::cout << " valuuuues " << _graph.getGraph()[new_dad].point.y << std::endl;
-					
-// 					Vertex created = new_dad;
+
 					//New intersection
-						
 					if(already_exist == false){
-// 						std::cout <<" dad " << _graph[dad_vertex].getX()<< " " << _graph[dad_vertex].getY() << std::endl;
 						addVertex(dad_vertex, new_dad);
 					}
 					//Not a new intersection but still an intersection
 					else{
 						if(new_dad != dad_vertex){
-// 							boost::add_edge(loop_index, index , _graph);
 							bettergraph::PseudoGraph<SimpleNode, SimpleEdge>::Edge ed;
 							SimpleEdge sed;
 							sed.setLine(_line);
 							_line.clear();
 							_graph.addEdge(ed, new_dad, dad_vertex, sed);
-// 							printGraph();
-// 							cv::waitKey(0);
 						}
 					}
 					
@@ -308,23 +238,12 @@ namespace AASS{
 					}
 					//END
 					else{
-	// 					std::cout << "size is : " << all_point.size() << std::endl;
-	// 					std::cout << "end"<<std::endl;
 						_LP.x = -1;
 						_LP.y = -1;
 					}
 					
 					//Needed to avoid an infinite loop :
-					type = typeOfIntersection(_W);
-							
-	// 				cv::Mat maa_3 = _map_in.clone();
-	// 				maa_3.setTo(cv::Scalar(0));
-	// 				drawGraph(maa_3);
-	// 				cv::imshow("graph", maa_3);
-	// 				std::cout << "Printing the graph" << std::endl;
-	// 				printGraph();
-	// 				cv::waitKey(0);
-					
+					type = typeOfIntersection(_W);				
 					
 				}
 				else{				
@@ -332,8 +251,6 @@ namespace AASS{
 	// 					std::cout << "reach a dead end" << std::endl;
 						cv::Mat m = _W.clone();
 
-	// 					std::cout << "Loop detection in DEADEND" << std::endl;
-						
 						Vertex loop_vertex; 
 						bool already_exist = loopDetection(new_p, loop_vertex);
 												
@@ -342,7 +259,6 @@ namespace AASS{
 						}
 						else{
 							
-// 							std::cout << "not new" << std::endl;
 							if(loop_vertex != dad_vertex){
 	// 							boost::add_edge(loop_index, index , _graph);
 								bettergraph::PseudoGraph<SimpleNode, SimpleEdge>::Edge ed;
@@ -350,45 +266,27 @@ namespace AASS{
 								sed.setLine(_line);
 								_line.clear();
 								_graph.addEdge(ed, loop_vertex, dad_vertex, sed);
-	// 							printGraph();
-	// 							cv::waitKey(0);
-							}
-							else{
-	// 							std::cout << "Loop and dad are the same" << std::endl;
+
 							}
 						}
  					
 						if(_LRP_to_explore.size() == 0){
-	// 						std::cout << "Last dead end " << std::endl;
 							_LP.x = -1;
 							_LP.y = -1;
 						}
 						else{
 							
-	// 						printIntersection();
-							
-	// 						int a; std::cin >> a;
-							
 							_RP = _LRP_to_explore[0].first; 
 							_LP = _LRP_to_explore[0].second;
-	// 						index = _dads_index[0];
-	// 						std::cout << "Move later " << std::endl;
 							dad_vertex = _dad_vertex.at(0);
 							_last_drawing_point = _last_drawing_point_deque[0];
-							//Remove them
-	// 						std::cout << "Popping LRP " << std::endl;
+
 							_LRP_to_explore.pop_front();
-	// 						std::cout << "Popping dads " << std::endl;
-	// 						_dads_index.pop_front();
-	// 						std::cout << "Popping Vertex " << std::endl;
 							_dad_vertex.pop_front();
-	// 						std::cout << "Popping drawing points " << std::endl;
 							_last_drawing_point_deque.pop_front();
-	// 						std::cout << "Move later " << std::endl;
-							
+
 							//Move the dynamic window
 							moveForward();
-	// 						std::cout << "Move later " << std::endl;
 						}
 
 						
@@ -411,9 +309,7 @@ namespace AASS{
 								sed.setLine(_line);
 								_line.clear();
 								_graph.addEdge(ed, loop_vertex, dad_vertex, sed);
-	// 							printGraph();
 								dad_vertex = loop_vertex;
-	// 							cv::waitKey(0);
 							}
 						}
 						
