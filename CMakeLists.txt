@@ -31,6 +31,9 @@ add_executable(vodigrex main.cpp)
 add_executable(test_line_follower Test/test_line_follower.cpp)
 target_link_libraries(test_line_follower ${OpenCV_LIBS} VoronoiLib)
 
+add_executable(test_line_graph Test/test_line_graph.cpp)
+target_link_libraries(test_line_graph ${OpenCV_LIBS} VoronoiLib)
+
 install(TARGETS vodigrex RUNTIME DESTINATION bin)
 install(TARGETS test_line_follower RUNTIME DESTINATION bin)
 

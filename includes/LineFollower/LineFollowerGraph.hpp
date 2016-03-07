@@ -1,8 +1,12 @@
-#ifndef LINEFOLLOWER_POINT_MAP
-#define LINEFOLLOWER_POINT_MAP
+#ifndef LINEFOLLOWERGRAPH_POINT_MAP_07032016
+#define LINEFOLLOWERGRAPH_POINT_MAP_07032016
 
 #include "LineFollower.hpp"
 #include "bettergraph/PseudoGraph.hpp"
+
+
+#include <bettergraph/PseudoGraph.hpp>
+#include "SimpleNode.hpp"
 
 namespace AASS{
 		
@@ -16,30 +20,22 @@ namespace AASS{
 		* This algorithm is iterative and able to adapt to any line size.
 		* Create a thinned image and graph of the lines.
 		*/
-		//USE THE CLASS MADE FOR THE BETTER GRAPH HERE TOO
-		template<typename GraphTemplate, typename VertexType, typename EdgeType, typename VertexMaker, typename EdgeMaker>
 		class LineFollowerGraph: public LineFollower{
 			
-			typedef boost::adjacency_list<
-				boost::listS, boost::listS, boost::undirectedS, 
-				VertexType,
-				EdgeType, 
-				boost::no_property > GraphType;
-			typedef typename boost::graph_traits<GraphType>::vertex_iterator VertexIterator;
-			typedef typename boost::graph_traits<GraphType>::vertex_descriptor Vertex;
-			typedef typename boost::graph_traits<GraphType>::edge_descriptor Edge;
-			typedef typename boost::graph_traits<GraphType>::out_edge_iterator EdgeIterator;
+			
 
 		protected : 
 // 			
+			typedef bettergraph::PseudoGraph<SimpleNode, SimpleEdge>::Vertex Vertex;
+			
 			/// @brief deque of all parent vertex with line to explore.
 			std::deque< Vertex > _dad_vertex;
 			/// @brief Final graph
-			GraphTemplate _graph;
-			VertexMaker _vertex_maker;
-			EdgeMaker _edge_maker;
+			bettergraph::PseudoGraph<SimpleNode, SimpleEdge> _graph;
+// 			VertexMaker _vertex_maker;
+// 			EdgeMaker _edge_maker;
 			///@brief List of all position of corssings to detect the nodes
-			std::deque<cv::Point2i> _all_crossings;	
+// 			std::deque<cv::Point2i> _all_crossings;	
 			
 			
 		public:
@@ -50,16 +46,15 @@ namespace AASS{
 				reset();
 			}
 
-			virtual void printGraph();
-			virtual void drawGraph(cv::Mat& m);
-// 			virtual const GraphTemplate& getGraph() const {return _graph;}
-// 			virtual GraphTemplate getGraph() {return _graph;}
+			
+			virtual const bettergraph::PseudoGraph<SimpleNode, SimpleEdge>& getGraph() const {return _graph;}
+			virtual bettergraph::PseudoGraph<SimpleNode, SimpleEdge> getGraph() {return _graph;}
 			virtual void reset();
 			
 			void printIntersection(){
 				for(size_t i = 0 ; i < _LRP_to_explore.size() ; i++){
 					std::cout << " point 1 " << _LRP_to_explore[i].first << " point 2 " << _LRP_to_explore[i].second ;
-					std::cout << " AT DAD " << _graph.getGraph()[_dad_vertex.at(i)].point.x << " " << _graph.getGraph()[_dad_vertex.at(i)].point.y << std::endl;
+					std::cout << " AT DAD " << _graph.getGraph()[_dad_vertex.at(i)].getX() << " " << _graph.getGraph()[_dad_vertex.at(i)].getY() << std::endl;
 				}
 			}
 			
@@ -68,6 +63,10 @@ namespace AASS{
 			* 
 			*/
 			void thin();
+			
+			/**
+			 * @brief return true if new_p is in _all_crossings*/
+			bool loopDetection(cv::Point2i new_p, Vertex& dad_vertex);
 			
 			
 		protected:
@@ -82,7 +81,7 @@ namespace AASS{
 			* -1 means that there is no line at all
 			* -2 means that we can only see white
 			*/
-			int typeOfIntersection(cv::Mat& roi);
+// 			int typeOfIntersection(cv::Mat& roi);
 			void init();
 			
 			/**
@@ -91,7 +90,7 @@ namespace AASS{
 // 			void moveForward();
 // 			void drawLine();
 // 			bool findNextLPRP(std::vector< cv::Point2i >& all_points);
-			void addPoint2Explore(const std::vector< cv::Point2i >& all_points, const VertexType& loop);
+			void addPoint2Explore(const std::vector< cv::Point2i >& all_points, const Vertex& loop);
 // 			void removeLineSegment(cv::Mat& c);
 // 			void upResize();
 
@@ -99,7 +98,7 @@ namespace AASS{
 			* @brief line thining algorithm after init.
 			* 
 			*/
-			void lineThinningAlgo(VertexType index_dad);
+			void lineThinningAlgo(Vertex& index_dad);
 			
 			/**
 			* @brief return the mininmal distance between to point of input vector. 
@@ -109,11 +108,35 @@ namespace AASS{
 			*/
 			double calculateDistance(std::vector<cv::Point2i>& all_points);
 			
+			void addVertex(const Vertex& vertex_parent, Vertex& vertex_out){
+// 				VertexType vtype = _vertex_maker.make(this);
+				cv::Size s;
+				cv::Point2i p_dyn_window;
+				_W.locateROI(s, p_dyn_window);
+// 				std::cout << "AT " << p_dyn_window.x << " " << p_dyn_window.y << std::endl;
+// 				std::cout <<" dad " << _graph[vertex_parent].getX()<< " " << _graph[vertex_parent].getY() << std::endl;
+				SimpleNode vtype;
+				vtype.setX(p_dyn_window.x);
+				vtype.setY(p_dyn_window.y);
+				_graph.addVertex(vertex_out, vertex_parent, vtype);
+							
+			}
+			
+			void addVertex(Vertex& vertex_out){
+				cv::Size s;
+				cv::Point2i p_dyn_window;
+				_W.locateROI(s, p_dyn_window);
+// 				std::cout << "AT " << p_dyn_window.x << " " << p_dyn_window.y << std::endl;
+				SimpleNode vtype;
+				vtype.setX(p_dyn_window.x);
+				vtype.setY(p_dyn_window.y);
+				_graph.addVertex(vertex_out, vtype);
+			}
+			
 		};
 
 		
 		
-
 		inline void LineFollowerGraph::thin()
 		{
 			try{
@@ -146,49 +169,16 @@ namespace AASS{
 				cv::Mat m = _W.clone();
 				//Is a dead end
 				if(all_point.size() == 2){
-					VertexType vtype = _vertex_maker.make(this);
-					_graph.addVertex(dad, vtype);
+// 					VertexType vtype = _vertex_maker.make(this);
+					addVertex(dad);
 					lineThinningAlgo(dad);
 				}
 				//Line
 				else{
-		// 				addPoint2Explore(all_point, dad);
-// 					if(all_point.size() == 4){
-// 		// 					std::cout << "Not a good start" << std::endl;
-// 						
 // 						VertexType vtype = _vertex_maker.make(this);
-// 						_graph.addVertex(dad, vtype);
-// 		// 				addPoint2Explore(all_point, dad);
-// 						lineThinningAlgo(dad);
-// 					}
-// 					else{
-// 						if(all_point.size() == 6){
-// 		// 						std::cout <<"Adding a T" << std::endl;
-// 							std::string s = "TCrossing";
-// 							_graph.addVertex(s, m, _RP, dad);
-// 		// 						addPoint2Explore(all_point, dad);
-// 		// 						printGraph();
-// 						}
-// 						if(all_point.size() == 8){
-// 		// 						std::cout <<"Adding a X" << std::endl;
-// 							std::string s = "XCrossing";
-// 							_graph.addVertex(s, m, _RP, dad);
-// 		// 						printGraph();
-// 		// 					addPoint2Explore(all_point, index, -1);
-// 						}
-// 						else{
-// 		// 						std::cout <<"Adding a N" << std::endl;
-// 							std::string s = "NCrossing";
-// 							_graph.addVertex(s, m, _RP, dad);
-// 		// 						printGraph();
-// 		// 					addPoint2Explore(all_point, index, -1);
-// 						}
-						VertexType vtype = _vertex_maker.make(this);
-						_graph.addVertex(dad, vtype);
-						addPoint2Explore(all_point, dad);
-						lineThinningAlgo(dad);
-// 					}
-					
+					addVertex(dad);
+					addPoint2Explore(all_point, dad);
+					lineThinningAlgo(dad);					
 				}
 			
 			}
@@ -198,7 +188,7 @@ namespace AASS{
 		}
 
 		
-		inline void LineFollowerGraph::lineThinningAlgo(Vertex index_dad)
+		inline void LineFollowerGraph::lineThinningAlgo(Vertex& index_dad)
 		{
 			
 	// 		std::cout << "line Thining algo vrai" << std::endl;
@@ -240,69 +230,45 @@ namespace AASS{
 	// 			printIntersection();
 	// 			std::cout << "And we are at LP " << _LP.x << " " << _LP.y << " RP "<< _RP.x << " " << _RP.y  << " type " << type << std::endl;
 				if( all_point.size() > 2 ){
-	// 				std::cout << "HOY INTERSECTION : " << type << std::endl;
+// 					std::cout << "HOY INTERSECTION : " << type << std::endl;
+// 					std::cout <<" dad " << _graph[dad_vertex].getX()<< " " << _graph[dad_vertex].getY() << std::endl;
 					
-					cv::Mat m = _W.clone();
-					//cv::imshow("intersection", _W);
-					//cv::waitKey(0);
+// 					cv::Mat m = _W.clone();
+// 					cv::imshow("intersection", _W);
+// 					cv::waitKey(0);
 
 	// 				//Find all possible lines. this function check as well if we need to take a "large view" on the intersection (risk of false positive if the _W is small)
 	// 				std::cout << "Loop detection in FIND NEXT LPRP" << std::endl;
-					
+// 					std::cout <<" dad " << _graph[dad_vertex].getX()<< " " << _graph[dad_vertex].getY() << std::endl;
 					
 					//USE : _all_crossings
 					Vertex new_dad;
-					bool is_new = _graph.loopDetection( new_p, dad_vertex, new_dad);
+					bool already_exist = loopDetection(new_p, new_dad);
+					
+// 					std::cout <<" dad " << _graph[dad_vertex].getX()<< " " << _graph[dad_vertex].getY() << std::endl;
 					
 	// 				std::cout << "Before value" << std::endl;
 	// 				std::cout << " valuuuues " << _graph.getGraph()[new_dad].point.y << std::endl;
 					
-					Vertex created = new_dad;
+// 					Vertex created = new_dad;
 					//New intersection
 						
-					if(is_new == true){
-						if(all_point.size() == 4){
-	// 						std::cout <<"Adding a T" << std::endl;
-							std::string s = "TCrossing";
-							_graph.addVertex(s, m, new_p, created, new_dad);
-	// 						printGraph();
-	// 							cv::waitKey(0);
-						}
-						else if (all_point.size() == 6){
-							
-	// 						std::cout <<"Adding a X" << std::endl;
-							std::string s = "XCrossing";
-							_graph.addVertex(s, m, new_p, created, new_dad);
-	// 						printGraph();
-	// 							cv::waitKey(0);
-						}
-						else if(all_point.size() > 6){
-							
-	// 						std::cout <<"Adding a N" << std::endl;
-							std::string s = "NCrossing";
-							_graph.addVertex(s, m, new_p, created, new_dad);
-	// 						printGraph();
-	// 							cv::waitKey(0);
-						}
-						else{
-							std::runtime_error("the number of point in all_point is absurd !");
-						}
-	// 					printIntersection();
-	// 					std::cout << "Value " << _graph.getGraph()[dad_vertex].point.x << std::endl;
-	// 						std::cin >> a;
-						
+					if(already_exist == false){
+// 						std::cout <<" dad " << _graph[dad_vertex].getX()<< " " << _graph[dad_vertex].getY() << std::endl;
+						addVertex(dad_vertex, new_dad);
 					}
 					//Not a new intersection but still an intersection
 					else{
 						if(new_dad != dad_vertex){
-	// 							boost::add_edge(loop_index, index , _graph);
-							_graph.addEdge(new_dad, dad_vertex);
-	// 							printGraph();
-	// 							cv::waitKey(0);
+// 							boost::add_edge(loop_index, index , _graph);
+							bettergraph::PseudoGraph<SimpleNode, SimpleEdge>::Edge ed;
+							_graph.addEdge(new_dad, dad_vertex, ed);
+// 							printGraph();
+// 							cv::waitKey(0);
 						}
 					}
 					
-					addPoint2Explore(all_point, created);
+					addPoint2Explore(all_point, new_dad);
 					cv::Point2i olddrawpoint = _last_drawing_point;
 					removeLineSegment(_W);
 					
@@ -352,23 +318,21 @@ namespace AASS{
 	// 					std::cout << "reach a dead end" << std::endl;
 						cv::Mat m = _W.clone();
 
-						std::string s = "DeadEnd";
 	// 					std::cout << "Loop detection in DEADEND" << std::endl;
 						
 						Vertex loop_vertex; 
-						bool is_new = _graph.loopDetection(new_p, dad_vertex, loop_vertex);
-						
-						if(is_new == true){
-// 							std::cout << "is new" << std::endl;
-							Vertex created;
-							_graph.addVertex(s, m, new_p, created, loop_vertex);
+						bool already_exist = loopDetection(new_p, loop_vertex);
+												
+						if(already_exist == false){
+							addVertex(dad_vertex, loop_vertex);
 						}
 						else{
 							
 // 							std::cout << "not new" << std::endl;
 							if(loop_vertex != dad_vertex){
 	// 							boost::add_edge(loop_index, index , _graph);
-								_graph.addEdge(loop_vertex, dad_vertex);
+								bettergraph::PseudoGraph<SimpleNode, SimpleEdge>::Edge ed;
+								_graph.addEdge(loop_vertex, dad_vertex, ed);
 	// 							printGraph();
 	// 							cv::waitKey(0);
 							}
@@ -376,13 +340,7 @@ namespace AASS{
 	// 							std::cout << "Loop and dad are the same" << std::endl;
 							}
 						}
-						
-	// 					cv::Mat maa_3_3 = _map_in.clone();
-	// 					maa_3_3.setTo(cv::Scalar(0));
-	// 					drawGraph(maa_3_3);
-	// 					cv::imshow("graph", maa_3_3);
-	// 					cv::waitKey(0);
-	// 					
+ 					
 						if(_LRP_to_explore.size() == 0){
 	// 						std::cout << "Last dead end " << std::endl;
 							_LP.x = -1;
@@ -415,12 +373,7 @@ namespace AASS{
 							moveForward();
 	// 						std::cout << "Move later " << std::endl;
 						}
-						
-	// 					cv::Mat maa_3 = _map_in.clone();
-	// 					maa_3.setTo(cv::Scalar(0));
-	// 					drawGraph(maa_3);
-	// 					cv::imshow("graph", maa_3);
-	// 					cv::waitKey(0);
+
 						
 					}
 					
@@ -430,13 +383,14 @@ namespace AASS{
 						_RP = all_point[1];
 						
 						Vertex loop_vertex; 
-						bool is_new = _graph.loopDetection(new_p, dad_vertex, loop_vertex);
+						bool already_seen = loopDetection(new_p, loop_vertex);
 						
 						//Making sure the line isn't actually a previsouly erased crossing.
-						if(is_new == false){
+						if(already_seen == true){
 							if(loop_vertex != dad_vertex){
 	// 							boost::add_edge(loop_index, index , _graph);
-								_graph.addEdge(loop_vertex, dad_vertex);
+								bettergraph::PseudoGraph<SimpleNode, SimpleEdge>::Edge ed;
+								_graph.addEdge(loop_vertex, dad_vertex, ed);
 	// 							printGraph();
 								dad_vertex = loop_vertex;
 	// 							cv::waitKey(0);
@@ -446,24 +400,6 @@ namespace AASS{
 						drawLine();
 						removeLineSegment(_W);
 						moveForward();
-					
-	// 					cv::imshow("image 2 ", _map_in);
-	// 					cv::imshow("result", _map_result);
-	// 					cv::Mat maa_3_33 = _map_in.clone();
-	// 					maa_3_33.setTo(cv::Scalar(0));
-	// 					_graph.draw(dad_vertex, maa_3_33);
-	// 					cv::Scalar color;
-	// 					if(maa_3_33.channels() == 1){
-	// 						color = 100;
-	// 					}
-	// 					else if(maa_3_33.channels() == 3){
-	// 						color[1] = 100;
-	// 						color[2] = 100;
-	// 						color[3] = 100; 
-	// 					}
-	// 					cv::circle(maa_3_33, new_p, 5, color);
-	// 					cv::imshow("dad", maa_3_33);
-	// 					cv::waitKey(0);
 						
 						type = typeOfIntersection(_W);
 						
@@ -568,7 +504,7 @@ namespace AASS{
 		
 		
 		
-		inline void LineFollowerGraph::addPoint2Explore(const std::vector< cv::Point2i >& all_points, const Vertex& loop)
+		inline void LineFollowerGraph::addPoint2Explore(const std::vector< cv::Point2i >& all_points, const bettergraph::PseudoGraph< AASS::VoDiGrEx::SimpleNode, AASS::VoDiGrEx::SimpleEdge>::Vertex& loop)
 		{
 			//TODO probably don't need this
 			if(all_points.size() >= 2){
@@ -585,27 +521,32 @@ namespace AASS{
 
 
 		
-		template<typename GraphTemplate, typename VertexType, typename EdgeType, typename VertexMaker, typename EdgeMaker>
-		inline void LineFollowerGraph<GraphTemplate, VertexType, EdgeType, VertexMaker, EdgeMaker>::reset()
+		
+		inline void LineFollowerGraph::reset()
 		{
 			//reset Boost graph
 			_graph.clear(); 
 			_dad_vertex.clear();
-			LineFollower::reset();
+			LineFollower::clear();
 		}
 
 		//To slow
-		inline void LineFollowerGraph::printGraph()
-		{
+	
 
-			_graph.print();
-		}
 		
-		inline void LineFollowerGraph::drawGraph(cv::Mat& m)
+		inline bool LineFollowerGraph::loopDetection(cv::Point2i new_p, AASS::VoDiGrEx::LineFollowerGraph::Vertex& dad_vertex)
 		{
-			_graph.draw(m);
+			for(size_t i = 0 ; i < _dad_vertex.size(); ++i){
+				if(_graph[_dad_vertex[i]].getX() <= new_p.x + _marge &&
+					_graph[_dad_vertex[i]].getX() >= new_p.x - _marge &&
+					_graph[_dad_vertex[i]].getY() <= new_p.y + _marge &&
+					_graph[_dad_vertex[i]].getY() >= new_p.y - _marge){
+					dad_vertex = _dad_vertex[i];
+					return true;
+				}
+				return false;
+			}
 		}
-
 
 
 		
