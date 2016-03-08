@@ -175,15 +175,8 @@ namespace AASS{
 		{
 			try{
 				cv::copyMakeBorder( _map_in, _map_in, 1, 1, 1, 1, cv::BORDER_CONSTANT, 0 );
-		// 		std::cout << "Init " << std::endl;
 				//Build the first ROI
 				init();
-				//labelSegments();
-			
-		// 			std::cout << "out of init " << std::endl;
-				
-				//TODO need to be more global than that.
-				//This find new points
 				//Init the first drawing point
 				cv::Point2i p;
 				cv::Size s;
@@ -191,19 +184,14 @@ namespace AASS{
 				
 				_last_drawing_point = cv::Point(p.x + (_W.rows/2), p.y + (_W.cols/2));
 				
-		// 			std::cout << "We start " << " at " << p.x << " " << p.y << " dyn wind " << _W.rows << " " << _W.cols << " draw oint " << _last_drawing_point << std::endl;
-				
 				std::vector<cv::Point2i> all_point;
 				findNextLPRP(all_point);
 				_LP = all_point[0];
 				_RP = all_point[1];
 				
-// 				Vertex dad;
-				
 				if(all_point.size() == 2){
 					lineThinningAlgo();
 				}
-				//Line
 				else{
 					addPoint2Explore(all_point);
 					lineThinningAlgo();	
@@ -287,13 +275,7 @@ namespace AASS{
 				//Rect_(_Tp _x, _Tp _y, _Tp _width, _Tp _height);
 				//Rect got everything inversed. It needs a point with first dim as col and second as row
 				int type = 0;
-				
-	// 			std::cout << _W << std::endl;
-				
 				while(type < 1){
-					
-					
-					
 					if( j - radius_min_height -1 >= 0){
 						radius_min_height++;
 					}
@@ -306,16 +288,10 @@ namespace AASS{
 					if( i +radius_max_width +1 <= _map_in.size().width-1){
 						radius_max_width++;
 					}
-					
-	//  			std::cout << " i and j " << i << " " <<j <<"values "<< i - radius_min_width << " " << j - radius_min_height << " " << i + radius_max_width << " " << j + radius_max_height << " and ma size " << _map_in.size() << std::endl;
+
 					//Test new window
 					_W = _map_in(cv::Rect( cv::Point(i - radius_min_width , j - radius_min_height), cv::Point( i + radius_max_width , j + radius_max_height ) ));
-	//  				std::cout << "type : " << typeOfIntersection(_W) << std::endl;
 					type = typeOfIntersection(_W);
-// 					
-// 					std::cout << "Start : " << type <<std::endl;
-// 					cv::imshow("Test", _W);
-// 					cv::waitKey(0);
 					
 					if(_W.rows == _map_in.rows-1 && _W.cols == _map_in.cols-1){
 						std::cout << "No line on the image " <<std::endl;
@@ -331,14 +307,6 @@ namespace AASS{
 				std::cout << "No line on the image " <<std::endl;
 				throw std::runtime_error("No Line found in the init proccess");
 			}
-			
-			//Defined LP and RP
-			//Only do the first and last col and row
-			//doing all cols		
-			
-			//When we finally got etiher an intersection or a full line, we launch the algorithm
-			
-			
 		}
 		
 		inline void LineFollower::getNewBranch()
@@ -382,14 +350,11 @@ namespace AASS{
 			if(_W.size().width >= _map_in.size().width && _W.size().height >= _map_in.size().height){
 				throw std::runtime_error("Dynamic window is the size (or more) of the image. It means that something went wrong in upResize");
 			}
-	// 		std::cout << "Upsize" << std::endl;
 			cv::Size s;
 			cv::Point2i p;
 			_W.locateROI(s, p);
 			
 			int emergency_flag = true;
-	// 		int rows = _W.rows;
-	// 		int cols = _W.cols;
 			
 			int x = p.x;
 			int y = p.y;
@@ -426,8 +391,6 @@ namespace AASS{
 				height++;
 			}
 			
-	// 		std::cout << "new measurement" << x << " " << y << " " << width << " " << height << " for " << _map_in.size().height << std::endl;
-			
 			if(emergency_flag == true){
 				throw std::runtime_error("Lost the line, impossible to resize the dynamic window to find it again.");
 			}
@@ -450,7 +413,6 @@ namespace AASS{
 		inline bool LineFollower::findNextLPRP(std::vector< cv::Point2i >& all_points)
 		{
 			
-	// 		std::cout << "inside find new lp for the list"<< std::endl << _W << std::endl;
 			//Memorise old position
 			double dist_min = 0 ;
 			
@@ -465,7 +427,6 @@ namespace AASS{
 				//Go to the first black point + 1
 				int count_tmp=0;
 				uchar val = _W.at<uchar>(j, i);
-		// 		std::cout << "value for init : " << (int) val<<std::endl;
 				while(val >= _value_of_white_min && count_tmp < 2*(_W.cols+_W.rows)+1 ){
 					count_tmp++;
 					i_prev = i;
@@ -485,9 +446,7 @@ namespace AASS{
 						j--;
 					}
 					val = _W.at<uchar>(j, i);
-		//  			std::cout << "value for init : " << (int) val<<std::endl;
 				}
-		// 		std::cout << "first black point : " << i << " "<< j << std::endl;
 				if( count_tmp == 2*(_W.cols+_W.rows)+1){
 					throw std::runtime_error("Dynamic window is full of white !!");
 				}
@@ -499,36 +458,23 @@ namespace AASS{
 				while(count_tmp < 2*(_W.cols+_W.rows-2) ){
 					
 					count_tmp++;
-		// 			std::cout << "COUNTING / : "<< count_tmp << std::endl;
-		// 			std::cout << " i and j "<<i <<" "<<j << std::endl;
 					//Go around the Dynamic window
 					if( i < _W.cols-1 && j == 0){
 						i++;
-		// 				std::cout << " 1at " << i << " " << j;
 						actual = _W.at<uchar>(j, i);
 					}
 					else if(j < _W.rows-1 && i == _W.cols-1){
 						j++;
-		// 				std::cout << " 2at " << i << " " << j;
 						actual = _W.at<uchar>(j, i);
 					}
 					else if(i > 0 && j == _W.rows-1){
 						i--;
-		// 				std::cout << " 3at " << i << " " << j;
 						actual = _W.at<uchar>(j, i);
 					}
 					else if(j > 0 && i == 0){
 						j--;
-		// 				std::cout << " 4at " << i << " " << j;
 						actual = _W.at<uchar>(j, i);
 					}
-					
-		// 			std::cout << std::endl;
-		// 			int sum = actual - prev;
-		// 			int a = actual;
-		// 			int p = prev;
-
-		// 			std::cout << actual << " " << prev <<std::endl;
 					
 					
 					if( actual > _value_of_white_min && prev <= _value_of_white_min){
@@ -536,11 +482,7 @@ namespace AASS{
 						cv::Point2i p;
 						_W.locateROI(s, p);
 						
-	// 					std::cout << "pushing point  : " << cv::Point2i(p.x + i, p.y + j) << " at : " << i << " and " << j << std::endl;
-						
 						all_points.push_back(cv::Point2i(p.x + i, p.y + j)); 
-						//_RP.y = p.y + j;
-						//_RP.x = p.x + i;
 					}
 					
 					if( actual <=_value_of_white_min && prev > _value_of_white_min){
@@ -548,12 +490,7 @@ namespace AASS{
 						cv::Point2i p;
 						_W.locateROI(s, p);
 						
-	// 					std::cout << "pushing end point  : " << cv::Point2i(p.x + i_prev, p.y + j_prev) << " at : " << i_prev << " and " << j_prev << std::endl;
-						
 						all_points.push_back(cv::Point2i(p.x + i_prev, p.y + j_prev));
-						
-		// 				_LP.y = p.y + j_prev;
-		// 				_LP.x = p.x + i_prev;
 					}
 				
 					prev = actual;
@@ -569,12 +506,9 @@ namespace AASS{
 				if(all_points.size() > 2){
 					//Calculate distance in between branches
 					dist_min = calculateDistance(all_points);
-// 					std::cout << "DISTANCE MIN IS " << dist_min << std::endl << std::endl;
 					//If the distance between branches is not good enough
 					if(dist_min <= _d){
-// 						std::cout << dist_min << " d " << _d << std::endl;
 						upResize();
-// 						std::cout << "RESIZED" << std::endl;
 					}
 				}
 				//get out of the loop
@@ -582,8 +516,6 @@ namespace AASS{
 					dist_min = _d+1;
 				}
 			}
-// 			std::cout << "Out with " << all_points.size() << " ";
-// 			std::cout << dist_min << " d " << _d << std::endl;
 			return true;
 			
 		}
@@ -755,10 +687,8 @@ namespace AASS{
 				else if (j > 0 && i == 0 ){
 					j--;
 				}
-	// 			std::cout << " i and j "<<i <<" "<<j << " at siwe " << roi.size() << std::endl;
 				val = roi.at<uchar>(j, i);
 			}
-	// 		std::cout << "first black point : " << i << " "<< j << std::endl;
 			if( count_tmp == 2*(roi.cols+roi.rows)+1){
 				return -2;
 			}
@@ -767,7 +697,6 @@ namespace AASS{
 				count_tmp = 0;
 				while(count_tmp < 2*(roi.cols+roi.rows-2) ){
 					count_tmp++;
-// 					std::cout << " i and j "<<i <<" "<<j << " value " << (int) roi.at<uchar>(j, i) << std::endl;
 					if( j == 0 && i < roi.cols -1){
 						i++;
 						//Cross a white part
@@ -783,7 +712,6 @@ namespace AASS{
 						else if(roi.at<uchar>(j, i) <= _value_of_white_min && flag_first == true){
 							flag_first = false;
 							if(dist < roi.cols){
-	// 							std::cout << "here "<< j << " " << i <<std::endl;
 								count++;
 							}
 							else{
@@ -808,7 +736,6 @@ namespace AASS{
 						else if(roi.at<uchar>(j, i) <= _value_of_white_min && flag_first == true){
 							flag_first = false;
 							if(dist < roi.rows){
-	// 							std::cout << "here "<< j << " " << i <<std::endl;
 								count++;
 							}
 							else{
@@ -887,29 +814,11 @@ namespace AASS{
 
 		inline void LineFollower::clear()
 		{
-			//reset Boost graph
 			_map_result = cv::Scalar(0,0,0);
-// 			_graph.clear(); 
 			_LRP_to_explore.clear();
-// 			_dad_vertex.clear();
 			_last_drawing_point_deque.clear();
 		}
 
-		//To slow
-// 		inline void LineFollower::printGraph()
-// 		{
-// 
-// 			_graph.print();
-// 		}
-// 		
-// 		inline void LineFollower::drawGraph(cv::Mat& m)
-// 		{
-// 			_graph.draw(m);
-// 		}
-
-
-
-		
 	}
 }
 
