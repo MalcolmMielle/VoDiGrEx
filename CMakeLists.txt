@@ -10,6 +10,8 @@ SET(CMAKE_CXX_FLAGS_DEBUG  "-DDEBUG -g")
 
 find_package( OpenCV REQUIRED)
 
+find_package( bettergraph REQUIRED)
+
 find_package( Boost REQUIRED )
 if ( NOT Boost_FOUND )
   message(STATUS "This project requires the Boost library, and will not be compiled.")
@@ -42,8 +44,35 @@ target_link_libraries(test_line_graph ${OpenCV_LIBS} VoronoiLib LineFollowerLib)
 add_executable(test_line_doors Test/test_line_doors.cpp)
 target_link_libraries(test_line_doors ${OpenCV_LIBS} VoronoiLib LineFollowerLib)
 
+add_subdirectory(includes)
+add_subdirectory(Test)
+
+
+# uninstall target
+configure_file(
+    "${CMAKE_CURRENT_SOURCE_DIR}/cmake_uninstall.cmake.in"
+    "${CMAKE_CURRENT_BINARY_DIR}/cmake_uninstall.cmake"
+    IMMEDIATE @ONLY)
+
+add_custom_target(uninstall
+    COMMAND ${CMAKE_COMMAND} -P ${CMAKE_CURRENT_BINARY_DIR}/cmake_uninstall.cmake)
+
+## Installing the files
+
+FILE(GLOB files "${CMAKE_CURRENT_SOURCE_DIR}/include/*.hpp")
+INSTALL(FILES ${files} DESTINATION include/vodigrex)
+INSTALL(FILES vodigrex-config.cmake DESTINATION lib/vodigrex)
+INSTALL(TARGETS VoronoiLib DESTINATION lib/vodigrex)
+INSTALL(TARGETS LineFollowerLib DESTINATION lib/vodigrex)
+
 install(TARGETS vodigrex RUNTIME DESTINATION bin)
 install(TARGETS test_line_follower RUNTIME DESTINATION bin)
 
-add_subdirectory(includes)
-add_subdirectory(Test)
+
+## If rpm wanted
+
+SET(CPACK_GENERATOR "RPM")
+SET(CPACK_DEBIAN_PACKAGE_MAINTAINER "Malcolm Mielle") #required
+ 
+INCLUDE(CPack)
+

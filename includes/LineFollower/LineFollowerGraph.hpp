@@ -3,9 +3,6 @@
 
 #include "LineFollower.hpp"
 #include "bettergraph/PseudoGraph.hpp"
-
-
-#include <bettergraph/PseudoGraph.hpp>
 #include "SimpleNode.hpp"
 
 namespace AASS{
