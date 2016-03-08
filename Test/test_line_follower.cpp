@@ -21,7 +21,6 @@ int main(){
 	cv::waitKey(0);
 	
 // 	AASS::VoDiGrEx::LineFollower llll_3;
-	llll_3.setMarge(10);
 	
 	llll_3.clear();
 

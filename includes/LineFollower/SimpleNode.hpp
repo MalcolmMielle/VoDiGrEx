@@ -1,9 +1,7 @@
 #ifndef SIMPLENODE_LINEFOLLOWER_POINT_MAP_07032016
 #define SIMPLENODE_LINEFOLLOWER_POINT_MAP_07032016
 
-#include <iostream>
-#include <stdio.h>
-#include "LineFollowerGraph.hpp"
+#include <vector>
 
 namespace AASS{
 		

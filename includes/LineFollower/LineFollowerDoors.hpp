@@ -30,11 +30,11 @@ namespace AASS{
 			
 		protected : 
 			std::deque < cv::Point > _doors;
-			typedef typename LineFollowerGraph<VertexType, EdgeType>::Vertex Vertex;
+			typedef typename bettergraph::PseudoGraph<VertexType, EdgeType>::Vertex Vertex;
 			
 		public:
 			
-			LineFollowerDoors() : LineFollowerGraph(){};
+			LineFollowerDoors(){};
 			virtual ~LineFollowerDoors(){
 
 			}
@@ -46,140 +46,54 @@ namespace AASS{
 			* @brief line thining algorithm
 			* 
 			*/
-// 			void thin();
+// 			virtual void thin(){
+// 				LineFollowerGraph<VertexType, EdgeType>::thin();
+// 			}
 			
 			bool wCrossDoor();
 			bool squareLineCollision (const cv::Point& p1, const cv::Point& p2, float minX, float minY, float maxX, float maxY);
-			void clear();
+			virtual void clear();
 		protected:
-			void init();
+// 			void init();
 
 			/**
 			* @brief line thining algorithm after init.
 			* 
 			*/
-			void lineThinningAlgo(topologicalmap::Vertex index_dad);
+			virtual void lineThinningAlgo(Vertex& index_dad);
 
 		};
-
 		
 		
-// 		template<typename VertexType, typename EdgeType>
-// 		inline void LineFollowerDoors<VertexType, EdgeType>::thin()
-// 		{
-// 			try{
-// 				cv::copyMakeBorder( _map_in, _map_in, 1, 1, 1, 1, cv::BORDER_CONSTANT, 0 );
-// 		// 		std::cout << "Init " << std::endl;
-// 				//Build the first ROI
-// 				init();
-// 				//labelSegments();
-// 			
-// 		// 			std::cout << "out of init " << std::endl;
-// 				
-// 				//TODO need to be more global than that.
-// 				//This find new points
-// 				//Init the first drawing point
-// 				cv::Point2i p;
-// 				cv::Size s;
-// 				_W.locateROI(s, p);
-// 				
-// 				_last_drawing_point = cv::Point(p.x + (_W.rows/2), p.y + (_W.cols/2));
-// 				
-// 		// 			std::cout << "We start " << " at " << p.x << " " << p.y << " dyn wind " << _W.rows << " " << _W.cols << " draw oint " << _last_drawing_point << std::endl;
-// 				
-// 				std::vector<cv::Point2i> all_point;
-// 				findNextLPRP(all_point);
-// 				_LP = all_point[0];
-// 				_RP = all_point[1];
-// 				
-// 				Vertex dad;
-// 				
-// 				cv::Mat m = _W.clone();
-// 				//Is a dead end
-// 				if(all_point.size() == 2){
-// 					cv::Mat m = _W.clone();
-// 					std::string s = "DeadEnd";
-// 					_graph.addVertex(s, m, _RP, dad);
-// 					lineThinningAlgo(dad);
-// 				}
-// 				//Line
-// 				else{
-// 		// 				addPoint2Explore(all_point, dad);
-// 					if(all_point.size() == 4){
-// 		// 					std::cout << "Not a good start" << std::endl;
-// 						std::string s = "WrongCrossing";
-// 						_graph.addVertex(s, m, _RP, dad);
-// 		// 					addPoint2Explore(all_point, dad);
-// 						lineThinningAlgo(dad);
-// 					}
-// 					else{
-// 						if(all_point.size() == 6){
-// 		// 						std::cout <<"Adding a T" << std::endl;
-// 							std::string s = "TCrossing";
-// 							_graph.addVertex(s, m, _RP, dad);
-// 		// 						addPoint2Explore(all_point, dad);
-// 		// 						printGraph();
-// 						}
-// 						if(all_point.size() == 8){
-// 		// 						std::cout <<"Adding a X" << std::endl;
-// 							std::string s = "XCrossing";
-// 							_graph.addVertex(s, m, _RP, dad);
-// 		// 						printGraph();
-// 		// 					addPoint2Explore(all_point, index, -1);
-// 						}
-// 						else{
-// 		// 						std::cout <<"Adding a N" << std::endl;
-// 							std::string s = "NCrossing";
-// 							_graph.addVertex(s, m, _RP, dad);
-// 		// 						printGraph();
-// 		// 					addPoint2Explore(all_point, index, -1);
-// 						}
-// 						addPoint2Explore(all_point, dad);
-// 						lineThinningAlgo(dad);
-// 					}
-// 					
-// 				}
-// 			
-// 			}
-// 			catch(const std::exception &e){
-// 				std::cout << "the unthinkable happened during voronoi landmark detection : " << e.what() << std::endl;
-// 			}
-// 		}
 
 		template<typename VertexType, typename EdgeType>
-		inline void LineFollowerDoors<VertexType, EdgeType>::lineThinningAlgo(Vertex index_dad)
+		inline void LineFollowerDoors<VertexType, EdgeType>::lineThinningAlgo(Vertex& index_dad)
 		{
 			
 			
+			std::cout << "LINE THINING DOOR" << std::endl;
+			
 			Vertex dad_vertex = index_dad;
-			while(_LP.x != -1 && _LP.y != -1){
-				
-				int type = typeOfIntersection(_W);
-				//If we lost it we upsize W
-				
-				while(type == 0){
-					upResize();
-					type = typeOfIntersection(_W);
-				}
+			while(this->_LP.x != -1 && this->_LP.y != -1){
 
 				std::vector<cv::Point2i> all_point;
-				bool non_dead_end = findNextLPRP(all_point);
+				bool non_dead_end = this->findNextLPRP(all_point);
 				
 				cv::Size s;
 				cv::Point2i p_dyn_window;
-				_W.locateROI(s, p_dyn_window);
+				this->_W.locateROI(s, p_dyn_window);
 				
 				cv::Point2i new_p;
-				new_p.x = p_dyn_window.x + (_W.cols / 2);
-				new_p.y = p_dyn_window.y + (_W.rows / 2);
+				new_p.x = p_dyn_window.x + (this->_W.cols / 2);
+				new_p.y = p_dyn_window.y + (this->_W.rows / 2);
 				
 				
-				
+				/*
 				//Crossing a door
 				if(wCrossDoor()){
-					cv::Mat m = _W.clone();
+					
 					Vertex new_dad;
-					bool is_new = _graph.loopDetection( new_p, dad_vertex, new_dad);
+					bool is_new = loopDetection( new_p, dad_vertex, new_dad);
 					
 					Vertex created = new_dad;
 					std::cout << "GOT A DOOR" << std::endl;
@@ -223,238 +137,67 @@ namespace AASS{
 					type = typeOfIntersection(_W);
 					
 				}
+				*/
+				
+				
+				
 
-				if( all_point.size() > 2 ){
+				//Intersection or dead end
+				if( all_point.size() > 2 || non_dead_end == false || wCrossDoor()){
 					
 					//USE : _all_crossings
 					Vertex new_dad;
-					bool already_exist = loopDetection(new_p, new_dad);
+					bool already_exist = this->loopDetection(new_p, new_dad);
 
 					//New intersection
 					if(already_exist == false){
-						addVertex(dad_vertex, new_dad);
+						this->addVertex(dad_vertex, new_dad);
 					}
 					//Not a new intersection but still an intersection
 					else{
 						if(new_dad != dad_vertex){
 							bettergraph::PseudoGraph<SimpleNode, SimpleEdge>::Edge ed;
 							SimpleEdge sed;
-							sed.setLine(_line);
-							_line.clear();
-							_graph.addEdge(ed, new_dad, dad_vertex, sed);
+							sed.setLine(this->_line);
+							this->_line.clear();
+							this->_graph.addEdge(ed, new_dad, dad_vertex, sed);
 						}
 					}
 					
-					addPoint2Explore(all_point, new_dad);
-					cv::Point2i olddrawpoint = _last_drawing_point;
-					removeLineSegment(_W);
-					
-					if(_LRP_to_explore.size() > 0){
-					
-						_last_drawing_point = olddrawpoint;
-						//Access new LP RP
-						_RP = _LRP_to_explore[0].first; 
-						_LP = _LRP_to_explore[0].second;
-						
-		// 						index = _dads_index[0];
-						dad_vertex = _dad_vertex.at(0);
-						
-						_last_drawing_point = _last_drawing_point_deque[0];
-						//Remove them
-						_LRP_to_explore.pop_front();
-		// 					_dads_index.pop_front();
-						_dad_vertex.pop_front();
-						_last_drawing_point_deque.pop_front();
-						
-						drawLine();
-						moveForward();
-					}
-					//END
-					else{
-						_LP.x = -1;
-						_LP.y = -1;
-					}
-					
-					//Needed to avoid an infinite loop :
-					type = typeOfIntersection(_W);				
+					this->addPoint2Explore(all_point, new_dad);
+					this->getNewBranch(dad_vertex);
+							
 					
 				}
 				else{				
-					if(non_dead_end == false){
-		// 					std::cout << "reach a dead end" << std::endl;
-						cv::Mat m = _W.clone();
 
-						Vertex loop_vertex; 
-						bool already_exist = loopDetection(new_p, loop_vertex);
-												
-						if(already_exist == false){
-							addVertex(dad_vertex, loop_vertex);
-						}
-						else{
-							
-							if(loop_vertex != dad_vertex){
-		// 							boost::add_edge(loop_index, index , _graph);
-								bettergraph::PseudoGraph<SimpleNode, SimpleEdge>::Edge ed;
-								SimpleEdge sed;
-								sed.setLine(_line);
-								_line.clear();
-								_graph.addEdge(ed, loop_vertex, dad_vertex, sed);
-
-							}
-						}
+					//Making sure the line isn't actually a previsouly erased crossing.
+					Vertex loop_vertex; 
+					bool already_seen = this->loopDetection(new_p, loop_vertex);
 					
-						if(_LRP_to_explore.size() == 0){
-							_LP.x = -1;
-							_LP.y = -1;
+					if(already_seen == true){
+						if(loop_vertex != dad_vertex){
+							bettergraph::PseudoGraph<SimpleNode, SimpleEdge>::Edge ed;
+							SimpleEdge sed;
+							sed.setLine(this->_line);
+							this->_line.clear();
+							this->_graph.addEdge(ed, loop_vertex, dad_vertex, sed);
+							dad_vertex = loop_vertex;
 						}
-						else{
-							
-							_RP = _LRP_to_explore[0].first; 
-							_LP = _LRP_to_explore[0].second;
-							dad_vertex = _dad_vertex.at(0);
-							_last_drawing_point = _last_drawing_point_deque[0];
-
-							_LRP_to_explore.pop_front();
-							_dad_vertex.pop_front();
-							_last_drawing_point_deque.pop_front();
-
-							//Move the dynamic window
-							moveForward();
-						}
-
-						
 					}
 					
-					else{
-		// 					std::cout << "Moving forward " << std::endl;
-						_LP = all_point[0];
-						_RP = all_point[1];
-						
-						Vertex loop_vertex; 
-						bool already_seen = loopDetection(new_p, loop_vertex);
-						
-						//Making sure the line isn't actually a previsouly erased crossing.
-						if(already_seen == true){
-							if(loop_vertex != dad_vertex){
-		// 							boost::add_edge(loop_index, index , _graph);
-								bettergraph::PseudoGraph<SimpleNode, SimpleEdge>::Edge ed;
-								SimpleEdge sed;
-								sed.setLine(_line);
-								_line.clear();
-								_graph.addEdge(ed, loop_vertex, dad_vertex, sed);
-								dad_vertex = loop_vertex;
-							}
-						}
-						
-						drawLine();
-						removeLineSegment(_W);
-						moveForward();
-						
-						type = typeOfIntersection(_W);
-						
-						
-					}			
+					this->_LP = all_point[0];
+					this->_RP = all_point[1];
+					this->moveForward();		
 				}
 			}
 		}
 
-		
-		template<typename VertexType, typename EdgeType>
-		inline void LineFollowerDoors<VertexType, EdgeType>::init()
-		{
-			
-			/*
-			* Build the first window
-			*/
-			//Clean up old results ;
-			LineFollower::reset();
-			
-			//Get the first white point of the image
-			int i = -1, j = -1;
-			for(int row = 0 ; row < _map_in.rows ; row++){
-				uchar* p = _map_in.ptr(row); //point to each row
-				for(int col = 0 ; col < _map_in.cols ; col++){
-					//p[j] <- how to access element
-	// 				std::cout << (int)p[j]<< std::endl;
-					if(p[col] > _value_of_white_min){
-						i = col;
-						j = row;
-						
-						//OUT
-						col = _map_in.cols;
-						row = _map_in.rows;
-					}
-				}
-			}
-			
-	//  		std::cout << " Building the window around " << i << " " << j << std::endl;
-			if(i != -1 && j !=-1){
-				//Build a window around this point until the get at least 2 crossing so we can determine the direction.
-				int radius_min_width = 0;
-				int radius_min_height = 0;
-				int radius_max_width = 0;
-				int radius_max_height = 0;
-				//Rect_(_Tp _x, _Tp _y, _Tp _width, _Tp _height);
-				//Rect got everything inversed. It needs a point with first dim as col and second as row
-				int type = 0;
-				
-	// 			std::cout << _W << std::endl;
-				
-				while(type < 1){
-					
-					if( j - radius_min_height -1 >= 0){
-						radius_min_height++;
-					}
-					if( j +radius_max_height +1 <= _map_in.size().height-1){
-						radius_max_height++;
-					}
-					if( i - radius_min_width -1 >= 0){
-						radius_min_width ++;
-					}
-					if( i +radius_max_width +1 <= _map_in.size().width-1){
-						radius_max_width++;
-					}
-					
-	//  			std::cout << " i and j " << i << " " <<j <<"values "<< i - radius_min_width << " " << j - radius_min_height << " " << i + radius_max_width << " " << j + radius_max_height << " and ma size " << _map_in.size() << std::endl;
-					//Test new window
-					_W = _map_in(cv::Rect( cv::Point(i - radius_min_width , j - radius_min_height), cv::Point( i + radius_max_width , j + radius_max_height ) ));
-	//  				std::cout << "type : " << typeOfIntersection(_W) << std::endl;
-					type = typeOfIntersection(_W);
-					
-	// 				std::cout << "Start : " << type <<std::endl;
-	// 				cv::imshow("Test", _W);
-	// 				cv::waitKey(0);
-					
-					if(_W.rows == _map_in.rows-1 && _W.cols == _map_in.cols-1){
-						std::cout << "No line on the image " <<std::endl;
-						throw std::runtime_error("No Line found in the init proccess everything is white");
-					}
-					
-					
-				}
-				
-			}
-			
-			else{
-				std::cout << "No line on the image " <<std::endl;
-				throw std::runtime_error("No Line found in the init proccess");
-			}
-			
-			//Defined LP and RP
-			//Only do the first and last col and row
-			//doing all cols		
-			
-			//When we finally got etiher an intersection or a full line, we launch the algorithm
-			
-			
-		}
-		
-		
 
 		template<typename VertexType, typename EdgeType>
 		inline void LineFollowerDoors<VertexType, EdgeType>::clear()
 		{
-			LineFollower::clear();
+			LineFollowerGraph<VertexType, EdgeType>::clear();
 			_doors.clear();
 		}
 
@@ -513,14 +256,14 @@ namespace AASS{
 			
 			cv::Point2i p;
 			cv::Size s;
-			_W.locateROI(s, p);
-			int height = _W.rows;
-			int width = _W.cols;
+			this->_W.locateROI(s, p);
+			int height = this->_W.rows;
+			int width = this->_W.cols;
 			
 // 			std::cout << "trying the door detection with " << _doors.size() << std::endl;
 			
 			for(size_t i = 0 ; i < _doors.size() ; i = i+2){
-// 				std::cout << " at : " << _doors[i].first << " at : " << _doors[i].second << std::endl;
+// 				std::cout << " at : " << _doors[i].x << " at : " << _doors[i].y << std::endl;
 // 				std::cout <<  p.x << " " << p.y << " " << p.x + width << " " <<p.y + height << std::endl;
 				if(res == false){
 					res = squareLineCollision(_doors[i], _doors[i + 1], p.x, p.y, p.x + width, p.y + height);

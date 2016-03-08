@@ -26,13 +26,21 @@ add_library(VoronoiLib
 			)
 target_link_libraries(VoronoiLib ${OpenCV_LIBS})
 
+add_library(LineFollowerLib 
+			includes/LineFollower/LineFollower.cpp
+			)
+target_link_libraries(VoronoiLib ${OpenCV_LIBS})
+
 add_executable(vodigrex main.cpp)
 
 add_executable(test_line_follower Test/test_line_follower.cpp)
-target_link_libraries(test_line_follower ${OpenCV_LIBS} VoronoiLib)
+target_link_libraries(test_line_follower ${OpenCV_LIBS} VoronoiLib LineFollowerLib)
 
 add_executable(test_line_graph Test/test_line_graph.cpp)
-target_link_libraries(test_line_graph ${OpenCV_LIBS} VoronoiLib)
+target_link_libraries(test_line_graph ${OpenCV_LIBS} VoronoiLib LineFollowerLib)
+
+add_executable(test_line_doors Test/test_line_doors.cpp)
+target_link_libraries(test_line_doors ${OpenCV_LIBS} VoronoiLib LineFollowerLib)
 
 install(TARGETS vodigrex RUNTIME DESTINATION bin)
 install(TARGETS test_line_follower RUNTIME DESTINATION bin)

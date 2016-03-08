@@ -22,36 +22,31 @@ namespace AASS{
 		*/
 		template<typename VertexType = SimpleNode, typename EdgeType = SimpleEdge>
 		class LineFollowerGraph: public LineFollower{
-			
-			
 
 		protected : 
-// 			
+ 			
 			typedef typename bettergraph::PseudoGraph<VertexType, EdgeType>::Vertex Vertex;
 			
 			/// @brief deque of all parent vertex with line to explore.
 			std::deque< Vertex > _dad_vertex;
 			/// @brief Final graph
 			bettergraph::PseudoGraph<VertexType, EdgeType> _graph;
-// 			VertexMaker _vertex_maker;
-// 			EdgeMaker _edge_maker;
-			///@brief List of all position of corssings to detect the nodes
-// 			std::deque<cv::Point2i> _all_crossings;	
-			
-			
+			/// @brief Every two point closer than _marge are to be fused as one.
+			int _marge;
+			/// @brief Edge points
 			std::vector< std::pair<int, int> > _line;
 			
 			
 		public:
 			
-			LineFollowerGraph() :LineFollower(){};
+			LineFollowerGraph() :LineFollower(), _marge(10){};
 			virtual ~LineFollowerGraph(){
 				//Clean up the vector of intersection
 				clear();
 			}
 			
-			virtual const bettergraph::PseudoGraph<SimpleNode, SimpleEdge>& getGraph() const {return _graph;}
-			virtual bettergraph::PseudoGraph<SimpleNode, SimpleEdge> getGraph() {return _graph;}
+			const bettergraph::PseudoGraph<SimpleNode, SimpleEdge>& getGraph() const {return _graph;}
+			bettergraph::PseudoGraph<SimpleNode, SimpleEdge> getGraph() {return _graph;}
 			virtual void clear();
 			
 			void printIntersection(){
@@ -65,8 +60,10 @@ namespace AASS{
 			* @brief line thining algorithm
 			* 
 			*/
-			void thin();
-			
+			virtual void thin();
+			/**
+			 *@brief set the minimum distance between two node*/
+			void setMarge(int m){_marge = m;}
 			/**
 			 * @brief return true if new_p is in _all_crossings*/
 			bool loopDetection(cv::Point2i new_p, Vertex& dad_vertex);
@@ -80,15 +77,12 @@ namespace AASS{
 			* @brief line thining algorithm after init.
 			* 
 			*/
-			void lineThinningAlgo(Vertex& index_dad);
+			virtual void lineThinningAlgo(Vertex& index_dad);
 			
 			void addVertex(const Vertex& vertex_parent, Vertex& vertex_out){
-// 				VertexType vtype = _vertex_maker.make(this);
 				cv::Size s;
 				cv::Point2i p_dyn_window;
 				_W.locateROI(s, p_dyn_window);
-// 				std::cout << "AT " << p_dyn_window.x << " " << p_dyn_window.y << std::endl;
-// 				std::cout <<" dad " << _graph[vertex_parent].getX()<< " " << _graph[vertex_parent].getY() << std::endl;
 				SimpleNode vtype;
 				vtype.setX(p_dyn_window.x + (_W.size().width/2));
 				vtype.setY(p_dyn_window.y + (_W.size().height/2));
@@ -105,7 +99,6 @@ namespace AASS{
 				cv::Size s;
 				cv::Point2i p_dyn_window;
 				_W.locateROI(s, p_dyn_window);
-// 				std::cout << "AT " << p_dyn_window.x << " " << p_dyn_window.y << std::endl;
 				SimpleNode vtype;
 				vtype.setX(p_dyn_window.x + (_W.size().width/2));
 				vtype.setY(p_dyn_window.y + (_W.size().height/2));
@@ -162,6 +155,8 @@ inline void LineFollowerGraph<VertexType, EdgeType>::thin()
 template<typename VertexType, typename EdgeType>
 inline void LineFollowerGraph<VertexType, EdgeType>::lineThinningAlgo(Vertex& index_dad)
 {
+	
+	std::cout << "LINE THINING GRAPH" << std::endl;
 
 	Vertex dad_vertex = index_dad;
 	while(_LP.x != -1 && _LP.y != -1){
