@@ -47,12 +47,12 @@ namespace AASS{
 			LineFollowerGraph() :LineFollower(){};
 			virtual ~LineFollowerGraph(){
 				//Clean up the vector of intersection
-				reset();
+				clear();
 			}
 			
 			virtual const bettergraph::PseudoGraph<SimpleNode, SimpleEdge>& getGraph() const {return _graph;}
 			virtual bettergraph::PseudoGraph<SimpleNode, SimpleEdge> getGraph() {return _graph;}
-			virtual void reset();
+			virtual void clear();
 			
 			void printIntersection(){
 				for(size_t i = 0 ; i < _LRP_to_explore.size() ; i++){
@@ -74,8 +74,6 @@ namespace AASS{
 			
 		protected:
 			void moveForward();
-			void setDynamicWindow(cv::Mat& m){_W = m;}		
-			void init();
 			void addPoint2Explore(const std::vector< cv::Point2i >& all_points, const typename bettergraph::PseudoGraph<VertexType, EdgeType>::Vertex& loop);
 
 			/**
@@ -83,14 +81,6 @@ namespace AASS{
 			* 
 			*/
 			void lineThinningAlgo(Vertex& index_dad);
-			
-			/**
-			* @brief return the mininmal distance between to point of input vector. 
-			* 
-			* @param[in] all_points : vector of cv::Point2i
-			* @return minimum distance
-			*/
-			double calculateDistance(std::vector<cv::Point2i>& all_points);
 			
 			void addVertex(const Vertex& vertex_parent, Vertex& vertex_out){
 // 				VertexType vtype = _vertex_maker.make(this);
@@ -238,99 +228,6 @@ inline void LineFollowerGraph<VertexType, EdgeType>::lineThinningAlgo(Vertex& in
 	}
 }
 
-
-template<typename VertexType, typename EdgeType>
-inline void LineFollowerGraph<VertexType, EdgeType>::init()
-{
-	
-	/*
-	* Build the first window
-	*/
-	//Clean up old results ;
-	LineFollowerGraph::reset();
-	
-	//Get the first white point of the image
-	int i = -1, j = -1;
-	for(int row = 0 ; row < _map_in.rows ; row++){
-		uchar* p = _map_in.ptr(row); //point to each row
-		for(int col = 0 ; col < _map_in.cols ; col++){
-			//p[j] <- how to access element
-// 				std::cout << (int)p[j]<< std::endl;
-			if(p[col] > _value_of_white_min){
-				i = col;
-				j = row;
-				
-				//OUT
-				col = _map_in.cols;
-				row = _map_in.rows;
-			}
-		}
-	}
-	
-//  		std::cout << " Building the window around " << i << " " << j << std::endl;
-	if(i != -1 && j !=-1){
-		//Build a window around this point until the get at least 2 crossing so we can determine the direction.
-		int radius_min_width = 0;
-		int radius_min_height = 0;
-		int radius_max_width = 0;
-		int radius_max_height = 0;
-		//Rect_(_Tp _x, _Tp _y, _Tp _width, _Tp _height);
-		//Rect got everything inversed. It needs a point with first dim as col and second as row
-		int type = 0;
-		
-// 			std::cout << _W << std::endl;
-		
-		while(type < 1){
-			
-			
-			
-			if( j - radius_min_height -1 >= 0){
-				radius_min_height++;
-			}
-			if( j +radius_max_height +1 <= _map_in.size().height-1){
-				radius_max_height++;
-			}
-			if( i - radius_min_width -1 >= 0){
-				radius_min_width ++;
-			}
-			if( i +radius_max_width +1 <= _map_in.size().width-1){
-				radius_max_width++;
-			}
-			
-//  			std::cout << " i and j " << i << " " <<j <<"values "<< i - radius_min_width << " " << j - radius_min_height << " " << i + radius_max_width << " " << j + radius_max_height << " and ma size " << _map_in.size() << std::endl;
-			//Test new window
-			_W = _map_in(cv::Rect( cv::Point(i - radius_min_width , j - radius_min_height), cv::Point( i + radius_max_width , j + radius_max_height ) ));
-//  				std::cout << "type : " << typeOfIntersection(_W) << std::endl;
-			type = typeOfIntersection(_W);
-// 					
-// 					std::cout << "Start : " << type <<std::endl;
-// 					cv::imshow("Test", _W);
-// 					cv::waitKey(0);
-			
-			if(_W.rows == _map_in.rows-1 && _W.cols == _map_in.cols-1){
-				std::cout << "No line on the image " <<std::endl;
-				throw std::runtime_error("No Line found in the init proccess everything is white");
-			}
-			
-			
-		}
-		
-	}
-	
-	else{
-		std::cout << "No line on the image " <<std::endl;
-		throw std::runtime_error("No Line found in the init proccess");
-	}
-	
-	//Defined LP and RP
-	//Only do the first and last col and row
-	//doing all cols		
-	
-	//When we finally got etiher an intersection or a full line, we launch the algorithm
-	
-	
-}
-
 template<typename VertexType, typename EdgeType>
 inline void LineFollowerGraph<VertexType, EdgeType>::getNewBranch(Vertex& parent)
 {
@@ -361,7 +258,7 @@ inline void LineFollowerGraph<VertexType, EdgeType>::addPoint2Explore(const std:
 
 
 template<typename VertexType, typename EdgeType>
-inline void LineFollowerGraph<VertexType, EdgeType>::reset()
+inline void LineFollowerGraph<VertexType, EdgeType>::clear()
 {
 	//reset Boost graph
 	_graph.clear(); 
