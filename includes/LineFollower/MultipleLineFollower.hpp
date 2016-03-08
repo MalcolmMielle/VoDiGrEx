@@ -1,20 +1,12 @@
 #ifndef MULTILINEFOLLOWER_POINT_MAP
 #define MULTILINEFOLLOWER_POINT_MAP
-
-#include <iostream>
-#include <stdio.h>
-#include <fstream>
-#include <assert.h>
-#include <stdexcept>
-#include "boost/graph/adjacency_list.hpp"
-#include "boost/graph/topological_sort.hpp"
  
 #include <opencv2/opencv.hpp>
 #include "LineFollower.hpp"
 		
 namespace AASS{
 		
-	namespace topologicalmap{
+	namespace vodigrex{
 
 		
 		/**

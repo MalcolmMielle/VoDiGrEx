@@ -21,7 +21,7 @@ int main()
 	"/********************************************************************"
 	<< std::endl << "second REAL test "<<std::endl;
 	
-	AASS::VoDiGrEx::LineFollowerDoors<> llll_3;
+	AASS::vodigrex::LineFollowerDoors<> llll_3;
 	llll_3.setMarge(10);
 	
 	std::deque < std::pair < cv::Point, cv::Point > > dpoint;
@@ -39,7 +39,7 @@ int main()
 
 	cv::Mat bug = cv::imread("../Test/DoorMap.png");
 	
-	AASS::VoDiGrEx::Thinker_Voronoi  t;
+	AASS::vodigrex::Thinker_Voronoi  t;
 	
 	t.think(bug);
 	cv::Mat vlll_3 = t.getResult();
@@ -68,7 +68,7 @@ int main()
 	
 	cv::Mat maa_3 = vlll_3.clone();
 	maa_3.setTo(cv::Scalar(0));
-	bettergraph::PseudoGraph<AASS::VoDiGrEx::SimpleNode, AASS::VoDiGrEx::SimpleEdge> graph = llll_3.getGraph();
+	bettergraph::PseudoGraph<AASS::vodigrex::SimpleNode, AASS::vodigrex::SimpleEdge> graph = llll_3.getGraph();
 	draw(graph, maa_3);
 // 	cv::line(maa_3, dpoint[0].first, dpoint[0].second, cv::Scalar(255));	
 

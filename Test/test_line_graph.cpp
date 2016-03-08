@@ -4,7 +4,7 @@
 
 int main(){
 	cv::Mat line = cv::imread("../Test/ObstacleMap.png");
-	AASS::VoDiGrEx::LineFollowerGraph<> llll_3;
+	AASS::vodigrex::LineFollowerGraph<> llll_3;
 
 	llll_3.setD(2);
 	llll_3.inputMap(line);
@@ -21,7 +21,7 @@ int main(){
 // 	maa_33.setTo(cv::Scalar(0));
 // 	llll_3.drawGraph(maa_3);
 	
-	bettergraph::PseudoGraph<AASS::VoDiGrEx::SimpleNode, AASS::VoDiGrEx::SimpleEdge> graph11 = llll_3.getGraph();
+	bettergraph::PseudoGraph<AASS::vodigrex::SimpleNode, AASS::vodigrex::SimpleEdge> graph11 = llll_3.getGraph();
 	
 	cv::Mat maa_31 = line.clone();
 	maa_31.setTo(cv::Scalar(0));
@@ -32,14 +32,14 @@ int main(){
 	cv::imshow("graph11", maa_31);
 	cv::waitKey(0);
 	
-// 	AASS::VoDiGrEx::LineFollower llll_3;
+// 	AASS::vodigrex::LineFollower llll_3;
 	llll_3.setMarge(10);
 	
 	llll_3.clear();
 
 	cv::Mat bug = cv::imread("../Test/ObstacleMap1.png");
 	
-	AASS::VoDiGrEx::Thinker_Voronoi t;
+	AASS::vodigrex::Thinker_Voronoi t;
 	t.setMode(4);
 	t.setDownSample(1);
 	t.think(bug);
@@ -62,7 +62,7 @@ int main(){
 // 	llll_3.printGraph();
 	//g.fromCustom2Boost(llll_3.getIntersections());
 	
-	bettergraph::PseudoGraph<AASS::VoDiGrEx::SimpleNode, AASS::VoDiGrEx::SimpleEdge> graph = llll_3.getGraph();
+	bettergraph::PseudoGraph<AASS::vodigrex::SimpleNode, AASS::vodigrex::SimpleEdge> graph = llll_3.getGraph();
 	
 	cv::Mat maa_3 = vlll_3.clone();
 	maa_3.setTo(cv::Scalar(0));

@@ -1,6 +1,6 @@
 #include "Thinker_Voronoi.hpp"
 
-void AASS::VoDiGrEx::Thinker_Voronoi::think(const cv::Mat& map_in)
+void AASS::vodigrex::Thinker_Voronoi::think(const cv::Mat& map_in)
 {  
 	reset();
 
@@ -55,7 +55,7 @@ void AASS::VoDiGrEx::Thinker_Voronoi::think(const cv::Mat& map_in)
 	dilateErode(this->_map_result);
 }
 
-void AASS::VoDiGrEx::Thinker_Voronoi::voronoi(const cv::Mat& mapin)
+void AASS::vodigrex::Thinker_Voronoi::voronoi(const cv::Mat& mapin)
 {
 	
 	std::cout << "channels : " << mapin.channels() << std::endl;
@@ -113,7 +113,7 @@ void AASS::VoDiGrEx::Thinker_Voronoi::voronoi(const cv::Mat& mapin)
 
 /*Function that return Voronoi Lines using a Sobel filter
  */
-void AASS::VoDiGrEx::Thinker_Voronoi::voronoiSobelLabel()
+void AASS::vodigrex::Thinker_Voronoi::voronoiSobelLabel()
 {
 	
 	
@@ -138,7 +138,7 @@ void AASS::VoDiGrEx::Thinker_Voronoi::voronoiSobelLabel()
 
 /*Function that return Voronoi Lines using a Laplace filter
  */
-void AASS::VoDiGrEx::Thinker_Voronoi::voronoiLaplaceLabel()
+void AASS::vodigrex::Thinker_Voronoi::voronoiLaplaceLabel()
 {
 	
 	_label.convertTo(_label,CV_32F);
@@ -151,7 +151,7 @@ void AASS::VoDiGrEx::Thinker_Voronoi::voronoiLaplaceLabel()
 
 /*****************************USING DIRECTLY VORONOI IMAGE************************/
 
-void AASS::VoDiGrEx::Thinker_Voronoi::voronoiCannyVoro()
+void AASS::vodigrex::Thinker_Voronoi::voronoiCannyVoro()
 {
 	cv::normalize(_voronoi, _voronoi, 0, 255, cv::NORM_MINMAX);
 	_voronoi.convertTo(_voronoi, CV_8U);
@@ -161,7 +161,7 @@ void AASS::VoDiGrEx::Thinker_Voronoi::voronoiCannyVoro()
 }
 
 
-void AASS::VoDiGrEx::Thinker_Voronoi::voronoiLaplaceVoro()
+void AASS::vodigrex::Thinker_Voronoi::voronoiLaplaceVoro()
 {
 	//Here erode 2 time is super cool !
 	_voronoi.convertTo(_voronoi,CV_32F);
@@ -354,7 +354,7 @@ void AASS::VoDiGrEx::Thinker_Voronoi::voronoiLaplaceVoro()
 
 
 
-void AASS::VoDiGrEx::Thinker_Voronoi::localMaxima()
+void AASS::vodigrex::Thinker_Voronoi::localMaxima()
 {
 
 	// accept only char type matrices
@@ -417,7 +417,7 @@ void AASS::VoDiGrEx::Thinker_Voronoi::localMaxima()
 
 
 
-void AASS::VoDiGrEx::Thinker_Voronoi::localMaximaBest()
+void AASS::vodigrex::Thinker_Voronoi::localMaximaBest()
 {
 	// accept only char type matrices
     CV_Assert(_voronoi.depth() != sizeof(uchar));
@@ -459,7 +459,7 @@ void AASS::VoDiGrEx::Thinker_Voronoi::localMaximaBest()
 	
 }
 
-void AASS::VoDiGrEx::Thinker_Voronoi::partialNormalize(cv::Mat& mat_in)
+void AASS::vodigrex::Thinker_Voronoi::partialNormalize(cv::Mat& mat_in)
 {
 	cv::Mat ROI;
 	this->_map_result =cv::Mat(_voronoi.size().height, _voronoi.size().width, CV_32F, cv::Scalar(0,0,0));
@@ -539,7 +539,7 @@ void AASS::VoDiGrEx::Thinker_Voronoi::partialNormalize(cv::Mat& mat_in)
 }
 
 
-void AASS::VoDiGrEx::Thinker_Voronoi::localMaximaCombo()
+void AASS::vodigrex::Thinker_Voronoi::localMaximaCombo()
 {
 
 	this->_map_result =cv::Mat(_voronoi.size().height, _voronoi.size().width, CV_32F, cv::Scalar(0,0,0));
@@ -632,7 +632,7 @@ void AASS::VoDiGrEx::Thinker_Voronoi::localMaximaCombo()
  * Problem is some pattern are erased
  **/
 
-void AASS::VoDiGrEx::Thinker_Voronoi::skeleton()
+void AASS::vodigrex::Thinker_Voronoi::skeleton()
 {
 	cv::cvtColor(this->_map_in, _voronoi, CV_RGB2GRAY);
 	cv::threshold(_voronoi, _voronoi, 10, 255, CV_THRESH_BINARY_INV);

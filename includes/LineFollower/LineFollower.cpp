@@ -1,6 +1,6 @@
 #include "LineFollower.hpp"
 
-void AASS::VoDiGrEx::LineFollower::thin()
+void AASS::vodigrex::LineFollower::thin()
 {
 	try{
 		cv::copyMakeBorder( _map_in, _map_in, 1, 1, 1, 1, cv::BORDER_CONSTANT, 0 );
@@ -33,7 +33,7 @@ void AASS::VoDiGrEx::LineFollower::thin()
 }
 
 
-inline void AASS::VoDiGrEx::LineFollower::lineThinningAlgo()
+inline void AASS::vodigrex::LineFollower::lineThinningAlgo()
 {
 	
 	std::cout << "BASE line " << std::endl;
@@ -69,14 +69,14 @@ inline void AASS::VoDiGrEx::LineFollower::lineThinningAlgo()
 
 
 
-inline void AASS::VoDiGrEx::LineFollower::init()
+inline void AASS::vodigrex::LineFollower::init()
 {
 	
 	/*
 	* Build the first window
 	*/
 	//Clean up old results ;
-	AASS::VoDiGrEx::LineFollower::clear();
+	AASS::vodigrex::LineFollower::clear();
 	
 	//Get the first white point of the image
 	int i = -1, j = -1;
@@ -140,7 +140,7 @@ inline void AASS::VoDiGrEx::LineFollower::init()
 	}
 }
 
-inline void AASS::VoDiGrEx::LineFollower::getNewBranch()
+inline void AASS::vodigrex::LineFollower::getNewBranch()
 {
 	
 	if(_LRP_to_explore.size() > 0){
@@ -163,19 +163,19 @@ inline void AASS::VoDiGrEx::LineFollower::getNewBranch()
 
 
 //TODO remove only the segment instead of the whole thing
-inline void AASS::VoDiGrEx::LineFollower::removeLineSegment(cv::Mat& c)
+inline void AASS::vodigrex::LineFollower::removeLineSegment(cv::Mat& c)
 {
 	//Make the whole mat black
 	c.setTo(cv::Scalar(0));
 }
 
-inline void AASS::VoDiGrEx::LineFollower::drawLine()
+inline void AASS::vodigrex::LineFollower::drawLine()
 {
 	cv::line(_map_result, _last_drawing_point, cv::Point((_LP.x + _RP.x)/2, (_LP.y + _LP.y)/2), cv::Scalar(255));	
 	_last_drawing_point = cv::Point((_LP.x + _RP.x)/2, (_LP.y + _LP.y)/2);
 }
 
-inline void AASS::VoDiGrEx::LineFollower::upResize()
+inline void AASS::vodigrex::LineFollower::upResize()
 {
 	
 	if(_W.size().width >= _map_in.size().width && _W.size().height >= _map_in.size().height){
@@ -241,7 +241,7 @@ inline void AASS::VoDiGrEx::LineFollower::upResize()
 * Return a list of all LP and RP extracted rom the dynamic window
 * return false is nothing is an the dynamic window
 */
-inline bool AASS::VoDiGrEx::LineFollower::findNextLPRP(std::vector< cv::Point2i >& all_points)
+inline bool AASS::vodigrex::LineFollower::findNextLPRP(std::vector< cv::Point2i >& all_points)
 {
 	
 	//Memorise old position
@@ -352,7 +352,7 @@ inline bool AASS::VoDiGrEx::LineFollower::findNextLPRP(std::vector< cv::Point2i 
 }
 
 
-inline void AASS::VoDiGrEx::LineFollower::addPoint2Explore(const std::vector< cv::Point2i >& all_points)
+inline void AASS::vodigrex::LineFollower::addPoint2Explore(const std::vector< cv::Point2i >& all_points)
 {
 	if(all_points.size() >= 2){
 		for(size_t i = 0 ; i < all_points.size() ; i=i+2){
@@ -365,7 +365,7 @@ inline void AASS::VoDiGrEx::LineFollower::addPoint2Explore(const std::vector< cv
 
 
 
-inline double AASS::VoDiGrEx::LineFollower::calculateDistance(std::vector< cv::Point2i >& all_points)
+inline double AASS::vodigrex::LineFollower::calculateDistance(std::vector< cv::Point2i >& all_points)
 {
 	//Calculating the distance in betzenn al point and return min_col
 	double min = -1;
@@ -403,7 +403,7 @@ inline double AASS::VoDiGrEx::LineFollower::calculateDistance(std::vector< cv::P
 }
 
 
-inline void AASS::VoDiGrEx::LineFollower::moveForward()
+inline void AASS::vodigrex::LineFollower::moveForward()
 {
 	drawLine();
 	removeLineSegment(_W);
@@ -490,7 +490,7 @@ inline void AASS::VoDiGrEx::LineFollower::moveForward()
 
 //TODO slow function... and probably horribly not optimized
 
-inline int AASS::VoDiGrEx::LineFollower::typeOfIntersection(cv::Mat& roi)
+inline int AASS::vodigrex::LineFollower::typeOfIntersection(cv::Mat& roi)
 {
 	
 	int count = 0;
@@ -643,7 +643,7 @@ inline int AASS::VoDiGrEx::LineFollower::typeOfIntersection(cv::Mat& roi)
 	}
 }
 
-inline void AASS::VoDiGrEx::LineFollower::clear()
+inline void AASS::vodigrex::LineFollower::clear()
 {
 	_map_result = cv::Scalar(0,0,0);
 	_LRP_to_explore.clear();

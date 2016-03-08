@@ -7,7 +7,7 @@
 
 namespace AASS{
 		
-	namespace VoDiGrEx{
+	namespace vodigrex{
 
 		/**
 		* @brief Line follower algorithm to create a graph and a thinned image.

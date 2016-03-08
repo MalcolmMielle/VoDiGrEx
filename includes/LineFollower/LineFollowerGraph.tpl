@@ -152,7 +152,7 @@ void LineFollowerGraph<VertexType, EdgeType>::clear()
 
 
 template<typename VertexType, typename EdgeType>
-bool LineFollowerGraph<VertexType, EdgeType>::loopDetection(cv::Point2i new_p, typename AASS::VoDiGrEx::LineFollowerGraph<VertexType, EdgeType>::Vertex& dad_vertex)
+bool LineFollowerGraph<VertexType, EdgeType>::loopDetection(cv::Point2i new_p, typename AASS::vodigrex::LineFollowerGraph<VertexType, EdgeType>::Vertex& dad_vertex)
 {
 	for(size_t i = 0 ; i < _dad_vertex.size(); ++i){
 		if(_graph[_dad_vertex[i]].getX() <= new_p.x + _marge &&

@@ -7,7 +7,7 @@
 #include "opencv2/imgproc/imgproc.hpp"
 
 namespace AASS{
-	namespace VoDiGrEx{
+	namespace vodigrex{
 	
 		
 		class Thinker_Voronoi : public Thinker{

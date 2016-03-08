@@ -3,7 +3,7 @@
 
 int main(){
 	cv::Mat line = cv::imread("../Test/ObstacleMap.png");
-	AASS::VoDiGrEx::LineFollower llll_3;
+	AASS::vodigrex::LineFollower llll_3;
 
 	llll_3.setD(2);
 	llll_3.inputMap(line);
@@ -20,13 +20,13 @@ int main(){
 	cv::imshow("graph", line);
 	cv::waitKey(0);
 	
-// 	AASS::VoDiGrEx::LineFollower llll_3;
+// 	AASS::vodigrex::LineFollower llll_3;
 	
 	llll_3.clear();
 
 	cv::Mat bug = cv::imread("../Test/ObstacleMap1.png");
 	
-	AASS::VoDiGrEx::Thinker_Voronoi t;
+	AASS::vodigrex::Thinker_Voronoi t;
 	t.setMode(4);
 	t.setDownSample(1);
 	t.think(bug);
