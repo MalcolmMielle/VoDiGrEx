@@ -165,6 +165,8 @@ namespace AASS{
 			*/
 			double calculateDistance(std::vector<cv::Point2i>& all_points);
 			
+			void getNewBranch();
+			
 		};
 
 		
@@ -203,13 +205,8 @@ namespace AASS{
 				}
 				//Line
 				else{
-// 					if(all_point.size() == 4){
-// 					}
-// 					else{
-						addPoint2Explore(all_point);
-// 					}
-					lineThinningAlgo();
-					
+					addPoint2Explore(all_point);
+					lineThinningAlgo();	
 				}
 			
 			}
@@ -223,19 +220,12 @@ namespace AASS{
 		{
 			
 			while(_LP.x != -1 && _LP.y != -1){
-				
-				int type = typeOfIntersection(_W);
-				//If we lost it we upsize W
-				
-				while(type == 0){
-					upResize();
-					type = typeOfIntersection(_W);
-				}
 
-				
+				//Get all the next line to explore
 				std::vector<cv::Point2i> all_point;
 				bool non_dead_end = findNextLPRP(all_point);
 				
+				//Get the point of the window
 				cv::Size s;
 				cv::Point2i p_dyn_window;
 				_W.locateROI(s, p_dyn_window);
@@ -243,94 +233,17 @@ namespace AASS{
 				cv::Point2i new_p;
 				new_p.x = p_dyn_window.x + (_W.cols / 2);
 				new_p.y = p_dyn_window.y + (_W.rows / 2);
-					
-	// 			std::cout << "Size points is : " << all_point.size() << std::endl;
-	// 			printIntersection();
-	// 			std::cout << "And we are at LP " << _LP.x << " " << _LP.y << " RP "<< _RP.x << " " << _RP.y  << " type " << type << std::endl;
-				if( all_point.size() > 2 ){
-	// 				std::cout << "HOY INTERSECTION : " << type << std::endl;
-					
-					cv::Mat m = _W.clone();
-					
+				
+				//Intersection or dead end
+				if( all_point.size() > 2 || non_dead_end == false){
 					addPoint2Explore(all_point/*, created*/);
-					cv::Point2i olddrawpoint = _last_drawing_point;
-					removeLineSegment(_W);
-					
-					if(_LRP_to_explore.size() > 0){
-					
-						_last_drawing_point = olddrawpoint;
-						//Access new LP RP
-						_RP = _LRP_to_explore[0].first; 
-						_LP = _LRP_to_explore[0].second;
-						
-						_last_drawing_point = _last_drawing_point_deque[0];
-						//Remove them
-						_LRP_to_explore.pop_front();
-
-						_last_drawing_point_deque.pop_front();
-						
-						drawLine();
-						moveForward();
-					}
-					//END
-					else{
-	// 					std::cout << "size is : " << all_point.size() << std::endl;
-	// 					std::cout << "end"<<std::endl;
-						_LP.x = -1;
-						_LP.y = -1;
-					}
-					
-					//Needed to avoid an infinite loop :
-					type = typeOfIntersection(_W);
-					
+					getNewBranch();					
 				}
-				else{				
-					if(non_dead_end == false){
-	// 					std::cout << "reach a dead end" << std::endl;
-						cv::Mat m = _W.clone();
-	// 					
-						if(_LRP_to_explore.size() == 0){
-	// 						std::cout << "Last dead end " << std::endl;
-							_LP.x = -1;
-							_LP.y = -1;
-						}
-						else{
-							
-							_RP = _LRP_to_explore[0].first; 
-							_LP = _LRP_to_explore[0].second;
-
-							_last_drawing_point = _last_drawing_point_deque[0];
-							//Remove them
-	// 						std::cout << "Popping LRP " << std::endl;
-							_LRP_to_explore.pop_front();
-
-							_last_drawing_point_deque.pop_front();
-	// 						std::cout << "Move later " << std::endl;
-							
-							//Move the dynamic window
-							moveForward();
-	// 						std::cout << "Move later " << std::endl;
-						}
-						
-
-						
-					}
-					
-					else{
-	// 					std::cout << "Moving forward " << std::endl;
-						_LP = all_point[0];
-						_RP = all_point[1];
-						
-
-						
-						drawLine();
-						removeLineSegment(_W);
-						moveForward();
-						
-						type = typeOfIntersection(_W);
-						
-						
-					}			
+				else{
+					_LP = all_point[0];
+					_RP = all_point[1];
+					moveForward();						
+		
 				}
 			}
 		}
@@ -427,6 +340,28 @@ namespace AASS{
 			
 			
 		}
+		
+		inline void LineFollower::getNewBranch()
+		{
+			
+			if(_LRP_to_explore.size() > 0){
+				//Access new LP RP
+				_RP = _LRP_to_explore[0].first; 
+				_LP = _LRP_to_explore[0].second;
+				_last_drawing_point = _last_drawing_point_deque[0];
+				//Remove them
+				_LRP_to_explore.pop_front();
+				_last_drawing_point_deque.pop_front();
+				
+				moveForward();
+			}
+			else{
+				_LP.x = -1;
+				_LP.y = -1;
+			}
+
+		}
+
 		
 		//TODO remove only the segment instead of the whole thing
 		inline void LineFollower::removeLineSegment(cv::Mat& c)
@@ -707,6 +642,8 @@ namespace AASS{
 		
 		inline void LineFollower::moveForward()
 		{
+			drawLine();
+			removeLineSegment(_W);
 			
 			// Find min and max points of the new points
 			int max_row = 0;
@@ -731,12 +668,6 @@ namespace AASS{
 				min_col = _LP.x;
 			}
 			
-			/*std::cout << "values : " << min_row - _d<< " "<< min_col - _d << " " <<max_row + _d << " "<< max_col + _d << " map cols : " << _map_in.cols << " map rows : " << _map_in.rows << std::endl;
-			std::cout << "_W "<<_W<<std::endl;*/
-			
-			//cv::Mat hey = _map_in(cv::Rect(cv::Point2i(min_col - _d -2 , min_row - _d -2 ) , cv::Point2i(max_col + _d +2, max_row + _d +2 )) );
-			//std::cout << " hey : "<<hey << std::endl;
-
 	// 		std::cout << "defining new mat" << std::endl;
 			int point_min_col = 0;
 			int point_min_row = 0;
@@ -773,7 +704,13 @@ namespace AASS{
 			//Rect got everything inversed. It needs a point with first dim as col and second as row
 			_W = _map_in(cv::Rect( cv::Point2i(point_min_col , point_min_row ) , cv::Point2i(point_max_col, point_max_row )) );
 			
-	// 		std::cout << _W << std::endl;
+			//Resize the window to match the line
+			int type = typeOfIntersection(_W);
+			//If we lost the line we upsize W
+			while(type == 0){
+				upResize();
+				type = typeOfIntersection(_W);
+			}
 			
 		}
 

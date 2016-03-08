@@ -93,7 +93,7 @@ inline void draw(bettergraph::PseudoGraph<AASS::VoDiGrEx::SimpleNode, AASS::VoDi
 
 int main(){
 	cv::Mat line = cv::imread("../Test/ObstacleMap.png");
-	AASS::VoDiGrEx::LineFollowerGraph llll_3;
+	AASS::VoDiGrEx::LineFollowerGraph<> llll_3;
 
 	llll_3.setD(2);
 	llll_3.inputMap(line);
