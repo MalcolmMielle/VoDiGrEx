@@ -89,11 +89,6 @@ namespace AASS{
 			int getD(){return _d;}
 			void setMinValueWhite(int w){_value_of_white_min = w;}
 			int getMinValueWhite(){return _value_of_white_min;}
-			
-			
-			cv::Mat& getDynamicWindow(){return _W;}
-			cv::Point2i getLP(){return _LP;}
-			cv::Point2i getRP(){return _RP;}
 
 			virtual void clear();
 			
@@ -111,6 +106,10 @@ namespace AASS{
 			
 			
 		protected:
+			cv::Mat& getDynamicWindow(){return _W;}
+			cv::Point2i getLP(){return _LP;}
+			cv::Point2i getRP(){return _RP;}
+			
 			void setDynamicWindow(cv::Mat& m){_W = m;}
 			
 			/**
