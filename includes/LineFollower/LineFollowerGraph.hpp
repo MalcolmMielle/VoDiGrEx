@@ -61,14 +61,16 @@ namespace AASS{
 			/**
 			 *@brief set the minimum distance between two node*/
 			void setMarge(int m){_marge = m;}
-			/**
-			 * @brief return true if new_p is in _all_crossings*/
-			bool loopDetection(cv::Point2i new_p, Vertex& dad_vertex);
+			int getMarge(){return _marge;}
+			
 			
 			
 		protected:
 			void moveForward();
 			void addPoint2Explore(const std::vector< cv::Point2i >& all_points, const typename bettergraph::PseudoGraph<VertexType, EdgeType>::Vertex& loop);
+			/**
+			 * @brief return true if new_p is in _all_crossings*/
+			bool loopDetection(cv::Point2i new_p, Vertex& dad_vertex);
 
 			/**
 			* @brief line thining algorithm after init.

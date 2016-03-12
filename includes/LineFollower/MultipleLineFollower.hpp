@@ -2,7 +2,7 @@
 #define MULTILINEFOLLOWER_POINT_MAP
  
 #include <opencv2/opencv.hpp>
-#include "LineFollower.hpp"
+#include "LineFollowerGraph.hpp"
 		
 namespace AASS{
 		
@@ -13,14 +13,31 @@ namespace AASS{
 		* @brief Multiple-Lines follower algorithm to extract multiple graphs.
 		* 
 		*/
-		
-		class MultipleLineFollower : public LineFollower{
+		template<typename VertexType = SimpleNode, typename EdgeType = SimpleEdge>
+		class MultipleLineFollower{
 		protected :
 			/// @brief deque of all topologicalmap::GraphList extracted from the image
-			std::deque< topologicalmap::GraphList > _dgraphlist;
+			std::deque< bettergraph::PseudoGraph<VertexType, EdgeType> > _dgraphlist;
+			LineFollowerGraph<VertexType, EdgeType> _line_follower;
 			
 		public :
-			MultipleLineFollower() : LineFollower() {};
+			MultipleLineFollower(){};
+			
+			void setLineFollower(const LineFollowerGraph<VertexType, EdgeType>& lin){_line_follower = lin;}
+			
+			void inputMap(const cv::Mat& m){
+				_line_follower.inputMap(m);
+			}
+			/// @brief Return the cv::Mat result with the line drawn.
+			cv::Mat& getResult(){return _line_follower.getResult();}
+			/// @brief Return unput cv::Mat
+			cv::Mat& getMatIn(){return _line_follower.getMatIn();}
+			void setD(int d){_line_follower.setD(d);}
+			int getD(){return _line_follower.getD();}
+			void setMinValueWhite(int w){_line_follower.setMinValueWhite(w);}
+			int getMinValueWhite(){return _line_follower.getMinValueWhite();}
+			void setMarge(int m){_line_follower.setMarge(m);}
+			int getMarge(){return _line_follower.getMarge();}
 			
 			/**
 			* @brief thinning algorithm
@@ -39,26 +56,25 @@ namespace AASS{
 			*/
 			virtual bool isBlack();
 			/// @brief clear all
-			virtual void reset();
-			void drawGraph(cv::Mat& m, int i);
-			virtual void printGraph(int i);
+			virtual void clear();
 			
 			///@brief return the i-est graph of the deque
-			virtual const GraphList& getGraph(int i) const {return _dgraphlist[i];}
+			virtual const bettergraph::PseudoGraph<VertexType, EdgeType>& getGraph(int i) const {return _dgraphlist[i];}
 			///@brief return the i-est graph of the deque
-			virtual GraphList getGraph(int i) {return _dgraphlist[i];}
+			virtual bettergraph::PseudoGraph<VertexType, EdgeType> getGraph(int i) {return _dgraphlist[i];}
 			
 		};
 		
-		inline void MultipleLineFollower::thin()
+		template<typename VertexType, typename EdgeType>
+		inline void MultipleLineFollower<VertexType, EdgeType>::thin()
 		{
-			std::cout << "Multiple Thin" << std::endl;
-			std::cout << std::endl;
+// 			std::cout << "Multiple Thin" << std::endl;
+// 			std::cout << std::endl;
 			//while image is not dark.
 	// 		int i = 0;
 			while (isBlack() == false){
 				
-				LineFollower::thin();
+				_line_follower.thin();
 				
 	// 			std::cout << "Size of in : " << _dgraphlist.size() << std::endl;
 				
@@ -70,10 +86,10 @@ namespace AASS{
 	// 			std::cout << _graph.getNumVertices() << std::endl;
 	// 			cv::waitKey(0);
 				
-				topologicalmap::GraphList gl = _graph;
+				bettergraph::PseudoGraph<VertexType, EdgeType> gl = _line_follower.getGraph();
 	// 			std::cout << "NUM VERT " << gl.getNumVertices() << std::endl;
 				_dgraphlist.push_back(gl);
-				LineFollower::reset();
+				_line_follower.clear();
 				
 				
 	// 			cv::Mat bug = cv::imread("../Test/Sequences/Seq1/0012.jpg");
@@ -94,19 +110,19 @@ namespace AASS{
 	// 		}
 		}
 
-		
-		inline void MultipleLineFollower::sort()
+		template<typename VertexType, typename EdgeType>
+		inline void MultipleLineFollower<VertexType, EdgeType>::sort()
 		{
 			//classify them in a clock wise manner
-			std::deque<	
-				GraphList
+			typename std::deque<	
+				bettergraph::PseudoGraph<VertexType, EdgeType>
 			>::iterator dgraph_ite;
 			
-			std::deque<	
-				GraphList
+			typename std::deque<	
+				bettergraph::PseudoGraph<VertexType, EdgeType>
 			>::iterator dgraph_ite_2;
 			
-			GraphList copy;
+			bettergraph::PseudoGraph<VertexType, EdgeType> copy;
 			
 			for(dgraph_ite =  _dgraphlist.begin()+1 ; dgraph_ite !=  _dgraphlist.end() ; dgraph_ite++){
 				
@@ -124,14 +140,15 @@ namespace AASS{
 
 		}
 		
-		inline bool MultipleLineFollower::isBlack()
+		template<typename VertexType, typename EdgeType>
+		inline bool MultipleLineFollower<VertexType, EdgeType>::isBlack()
 		{
-			for(int row = 0 ; row < getMatIn().rows ; row++){
-				uchar* p = getMatIn().ptr(row); //point to each row
-				for(int col = 0 ; col < getMatIn().cols ; col++){
+			for(int row = 0 ; row < _line_follower.getMatIn().rows ; row++){
+				uchar* p = _line_follower.getMatIn().ptr(row); //point to each row
+				for(int col = 0 ; col < _line_follower.getMatIn().cols ; col++){
 					//p[j] <- how to access element
 	// 				std::cout << (int)p[j]<< std::endl;
-					if(p[col] > getMinValueWhite()){
+					if(p[col] > _line_follower.getMinValueWhite()){
 						return false;
 					}
 				}
@@ -140,24 +157,13 @@ namespace AASS{
 
 		}
 		
-		inline void MultipleLineFollower::reset()
+		template<typename VertexType, typename EdgeType>
+		inline void MultipleLineFollower<VertexType, EdgeType>::clear()
 		{
-			//reset Boost graph
-			LineFollower::reset();
+			//clear Boost graph
+			_line_follower.clear();
 			_dgraphlist.clear();
 			
-		}
-
-		//To slow
-		inline void MultipleLineFollower::printGraph(int i)
-		{
-
-			_dgraphlist[i].print();
-		}
-		
-		inline void MultipleLineFollower::drawGraph(cv::Mat& m, int i)
-		{
-			_dgraphlist[i].draw(m);
 		}
 		
 
