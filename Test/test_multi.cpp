@@ -3,7 +3,7 @@
 #include "Utils/Utils.hpp"
 
 int main(){
-	cv::Mat line = cv::imread("../Test/ObstacleMap.png");
+	cv::Mat line = cv::imread("../Test/ObstacleMap.png", CV_LOAD_IMAGE_GRAYSCALE);
 	AASS::vodigrex::MultipleLineFollower<> llll_3;
 
 	llll_3.setD(2);
@@ -37,7 +37,7 @@ int main(){
 	
 	llll_3.clear();
 
-	cv::Mat bug = cv::imread("../Test/ObstacleMap1.png");
+	cv::Mat bug = cv::imread("../Test/ObstacleMap1.png", CV_LOAD_IMAGE_GRAYSCALE);
 	
 	AASS::vodigrex::ThinkerVoronoi t;
 	t.setMode(4);

@@ -22,6 +22,7 @@ namespace AASS{
 		public:
 			Thinker() : _mode(4), _threshold_local_max(0.5), _sharpner(0), _dilate(0), _downSample(1), _level(30){};
 			
+
 			virtual void think(const cv::Mat& map_in)=0;
 			virtual int getMode() const {return _mode;}
 			virtual void setMode(int m){_mode = m;}

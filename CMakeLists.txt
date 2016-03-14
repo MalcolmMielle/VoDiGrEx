@@ -23,8 +23,8 @@ include_directories("${PROJECT_BINARY_DIR}" ${CMAKE_CURRENT_BINARY_DIR}
 )
 
 add_library(VoronoiLib 
-			includes/VoronoiDiagram/ThinkerVoronoi.cpp
-# 			includes/VoronoiDiagram/Thinker_EVG.cpp
+			includes/VoronoiDiagram/ThinkerVoronoi.cpp		
+			
 			)
 target_link_libraries(VoronoiLib ${OpenCV_LIBS})
 
@@ -46,6 +46,9 @@ target_link_libraries(test_line_doors ${OpenCV_LIBS} VoronoiLib LineFollowerLib)
 
 add_executable(test_multi Test/test_multi.cpp)
 target_link_libraries(test_multi ${OpenCV_LIBS} VoronoiLib LineFollowerLib)
+
+add_executable(partial_image Test/partial_image_voronoi.cpp)
+target_link_libraries(partial_image ${OpenCV_LIBS} VoronoiLib LineFollowerLib)
 
 add_subdirectory(includes)
 add_subdirectory(Test)
