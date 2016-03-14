@@ -10,14 +10,14 @@ namespace AASS{
 	namespace vodigrex{
 	
 		
-		class Thinker_Voronoi : public Thinker{
+		class ThinkerVoronoi : public Thinker{
 		protected:
 			cv::Mat _voronoi;
 			cv::Mat _label;
 
 			
 		public:
-			Thinker_Voronoi() : Thinker() {
+			ThinkerVoronoi() : Thinker() {
 			};
 			
 			virtual void think(const cv::Mat& map_in);	

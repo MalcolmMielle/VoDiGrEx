@@ -6,7 +6,7 @@
 #include <ctime> 
 
 #include "LineFollower.hpp"
-#include "Thinker_Voronoi.hpp"
+#include "ThinkerVoronoi.hpp"
 #include "LineFollowerDoors.hpp"
 #include "bettergraph/PseudoGraph.hpp"
 #include "SimpleNode.hpp"
@@ -39,7 +39,7 @@ int main()
 
 	cv::Mat bug = cv::imread("../Test/DoorMap.png");
 	
-	AASS::vodigrex::Thinker_Voronoi  t;
+	AASS::vodigrex::ThinkerVoronoi  t;
 	
 	t.think(bug);
 	cv::Mat vlll_3 = t.getResult();
