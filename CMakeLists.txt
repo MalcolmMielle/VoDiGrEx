@@ -23,7 +23,7 @@ include_directories("${PROJECT_BINARY_DIR}" ${CMAKE_CURRENT_BINARY_DIR}
 )
 
 add_library(VoronoiLib 
-			includes/VoronoiDiagram/Thinker_Voronoi.cpp
+			includes/VoronoiDiagram/ThinkerVoronoi.cpp
 # 			includes/VoronoiDiagram/Thinker_EVG.cpp
 			)
 target_link_libraries(VoronoiLib ${OpenCV_LIBS})

@@ -1,5 +1,5 @@
 #include "LineFollowerGraph.hpp"
-#include "Thinker_Voronoi.hpp"
+#include "ThinkerVoronoi.hpp"
 #include "Utils/Utils.hpp"
 
 int main(){
@@ -39,7 +39,7 @@ int main(){
 
 	cv::Mat bug = cv::imread("../Test/ObstacleMap1.png");
 	
-	AASS::vodigrex::Thinker_Voronoi t;
+	AASS::vodigrex::ThinkerVoronoi t;
 	t.setMode(4);
 	t.setDownSample(1);
 	t.think(bug);

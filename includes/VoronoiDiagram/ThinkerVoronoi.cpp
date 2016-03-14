@@ -1,6 +1,6 @@
-#include "Thinker_Voronoi.hpp"
+#include "ThinkerVoronoi.hpp"
 
-void AASS::vodigrex::Thinker_Voronoi::think(const cv::Mat& map_in)
+void AASS::vodigrex::ThinkerVoronoi::think(const cv::Mat& map_in)
 {  
 	reset();
 
@@ -55,7 +55,7 @@ void AASS::vodigrex::Thinker_Voronoi::think(const cv::Mat& map_in)
 	dilateErode(this->_map_result);
 }
 
-void AASS::vodigrex::Thinker_Voronoi::voronoi(const cv::Mat& mapin)
+void AASS::vodigrex::ThinkerVoronoi::voronoi(const cv::Mat& mapin)
 {
 	
 	std::cout << "channels : " << mapin.channels() << std::endl;
@@ -113,7 +113,7 @@ void AASS::vodigrex::Thinker_Voronoi::voronoi(const cv::Mat& mapin)
 
 /*Function that return Voronoi Lines using a Sobel filter
  */
-void AASS::vodigrex::Thinker_Voronoi::voronoiSobelLabel()
+void AASS::vodigrex::ThinkerVoronoi::voronoiSobelLabel()
 {
 	
 	
@@ -138,7 +138,7 @@ void AASS::vodigrex::Thinker_Voronoi::voronoiSobelLabel()
 
 /*Function that return Voronoi Lines using a Laplace filter
  */
-void AASS::vodigrex::Thinker_Voronoi::voronoiLaplaceLabel()
+void AASS::vodigrex::ThinkerVoronoi::voronoiLaplaceLabel()
 {
 	
 	_label.convertTo(_label,CV_32F);
@@ -151,7 +151,7 @@ void AASS::vodigrex::Thinker_Voronoi::voronoiLaplaceLabel()
 
 /*****************************USING DIRECTLY VORONOI IMAGE************************/
 
-void AASS::vodigrex::Thinker_Voronoi::voronoiCannyVoro()
+void AASS::vodigrex::ThinkerVoronoi::voronoiCannyVoro()
 {
 	cv::normalize(_voronoi, _voronoi, 0, 255, cv::NORM_MINMAX);
 	_voronoi.convertTo(_voronoi, CV_8U);
@@ -161,7 +161,7 @@ void AASS::vodigrex::Thinker_Voronoi::voronoiCannyVoro()
 }
 
 
-void AASS::vodigrex::Thinker_Voronoi::voronoiLaplaceVoro()
+void AASS::vodigrex::ThinkerVoronoi::voronoiLaplaceVoro()
 {
 	//Here erode 2 time is super cool !
 	_voronoi.convertTo(_voronoi,CV_32F);
@@ -257,7 +257,7 @@ void AASS::vodigrex::Thinker_Voronoi::voronoiLaplaceVoro()
 
 /*Function to calculate delaunay triangle. Intersection are voronoi points. Problem : too many points
  */
-// inline void Thinker_Voronoi::delaunay(const std::vector<cv::Point2f>& obst)
+// inline void ThinkerVoronoi::delaunay(const std::vector<cv::Point2f>& obst)
 // {
 // 	
 // 	//TODO Need to convert into grayscale ??
@@ -354,7 +354,7 @@ void AASS::vodigrex::Thinker_Voronoi::voronoiLaplaceVoro()
 
 
 
-void AASS::vodigrex::Thinker_Voronoi::localMaxima()
+void AASS::vodigrex::ThinkerVoronoi::localMaxima()
 {
 
 	// accept only char type matrices
@@ -417,7 +417,7 @@ void AASS::vodigrex::Thinker_Voronoi::localMaxima()
 
 
 
-void AASS::vodigrex::Thinker_Voronoi::localMaximaBest()
+void AASS::vodigrex::ThinkerVoronoi::localMaximaBest()
 {
 	// accept only char type matrices
     CV_Assert(_voronoi.depth() != sizeof(uchar));
@@ -459,7 +459,7 @@ void AASS::vodigrex::Thinker_Voronoi::localMaximaBest()
 	
 }
 
-void AASS::vodigrex::Thinker_Voronoi::partialNormalize(cv::Mat& mat_in)
+void AASS::vodigrex::ThinkerVoronoi::partialNormalize(cv::Mat& mat_in)
 {
 	cv::Mat ROI;
 	this->_map_result =cv::Mat(_voronoi.size().height, _voronoi.size().width, CV_32F, cv::Scalar(0,0,0));
@@ -539,7 +539,7 @@ void AASS::vodigrex::Thinker_Voronoi::partialNormalize(cv::Mat& mat_in)
 }
 
 
-void AASS::vodigrex::Thinker_Voronoi::localMaximaCombo()
+void AASS::vodigrex::ThinkerVoronoi::localMaximaCombo()
 {
 
 	this->_map_result =cv::Mat(_voronoi.size().height, _voronoi.size().width, CV_32F, cv::Scalar(0,0,0));
@@ -632,7 +632,7 @@ void AASS::vodigrex::Thinker_Voronoi::localMaximaCombo()
  * Problem is some pattern are erased
  **/
 
-void AASS::vodigrex::Thinker_Voronoi::skeleton()
+void AASS::vodigrex::ThinkerVoronoi::skeleton()
 {
 	cv::cvtColor(this->_map_in, _voronoi, CV_RGB2GRAY);
 	cv::threshold(_voronoi, _voronoi, 10, 255, CV_THRESH_BINARY_INV);
