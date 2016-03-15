@@ -74,5 +74,6 @@ int main(){
 	
 	AASS::vodigrex::DynamicGraphExtractor<> gp;
 	gp.inputMap(line);
+	gp.getNonModifiedEdges();
 	
 }
