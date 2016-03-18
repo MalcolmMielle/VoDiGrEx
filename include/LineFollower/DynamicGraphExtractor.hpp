@@ -62,7 +62,7 @@ namespace AASS{
 			cv::Mat to_remove = this->_previous_image - this->_image;
 			
 			cv::Mat draw_edges = cv::Mat::zeros(to_remove.rows, to_remove.cols, to_remove.type());
-			this->drawEdges(_previous_graph, draw_edges);
+			this->getEdges(_previous_graph, draw_edges);
 			
 			
 			
@@ -92,7 +92,7 @@ namespace AASS{
 		}
 		
 		template<typename VertexType, typename EdgeType>
-		inline void DynamicGraphExtractor::getEdges(const bettergraph::PseudoGraph< VertexType, EdgeType >& graph, cv::Mat& mat_in)
+		inline void DynamicGraphExtractor<VertexType, EdgeType>::getEdges(const bettergraph::PseudoGraph< VertexType, EdgeType >& graph, cv::Mat& mat_in)
 		{
 			
 			
@@ -107,7 +107,7 @@ namespace AASS{
 				EdgeIterator out_i, out_end;
 				Edge e;
 
-				for (boost::tie(out_i, out_end) = boost::out_edges(v, (*this)); 
+				for (boost::tie(out_i, out_end) = boost::out_edges(v, (*this)._graph); 
 					out_i != out_end; ++out_i) {
 					e = *out_i;
 					//Draw the edge on test
@@ -130,7 +130,7 @@ namespace AASS{
 							//p[j] <- how to access element
 							if(p[col] > 0){
 								this->_to_remove_edges.push_back(e);
-								this->_vertex_to_search_again.push_back(std::pair<Vertex, Vertex>(v, graph.getTarget(e, v) ));
+// 								this->_vertex_to_search_again.push_back(std::pair<Vertex, Vertex>(v, _graph.getTarget(e, v) ));
 							}
 						}
 					}
