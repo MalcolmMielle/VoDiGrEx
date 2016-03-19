@@ -22,33 +22,33 @@ include_directories("${PROJECT_BINARY_DIR}" ${CMAKE_CURRENT_BINARY_DIR}
 	include include/VoronoiDiagram/ include/LineFollower/
 )
 
-add_library(VoronoiLib 
+add_library(Voronoi 
 			include/VoronoiDiagram/ThinkerVoronoi.cpp		
 			
 			)
-target_link_libraries(VoronoiLib ${OpenCV_LIBS})
+target_link_libraries(Voronoi ${OpenCV_LIBS})
 
-add_library(LineFollowerLib 
+add_library(LineFollower 
 			include/LineFollower/LineFollower.cpp
 			)
-target_link_libraries(VoronoiLib ${OpenCV_LIBS})
+target_link_libraries(Voronoi ${OpenCV_LIBS})
 
 add_executable(vodigrex main.cpp)
 
 add_executable(test_line_follower Test/test_line_follower.cpp)
-target_link_libraries(test_line_follower ${OpenCV_LIBS} VoronoiLib LineFollowerLib)
+target_link_libraries(test_line_follower ${OpenCV_LIBS} Voronoi LineFollower)
 
 add_executable(test_line_graph Test/test_line_graph.cpp)
-target_link_libraries(test_line_graph ${OpenCV_LIBS} VoronoiLib LineFollowerLib)
+target_link_libraries(test_line_graph ${OpenCV_LIBS} Voronoi LineFollower)
 
 add_executable(test_line_doors Test/test_line_doors.cpp)
-target_link_libraries(test_line_doors ${OpenCV_LIBS} VoronoiLib LineFollowerLib)
+target_link_libraries(test_line_doors ${OpenCV_LIBS} Voronoi LineFollower)
 
 add_executable(test_multi Test/test_multi.cpp)
-target_link_libraries(test_multi ${OpenCV_LIBS} VoronoiLib LineFollowerLib)
+target_link_libraries(test_multi ${OpenCV_LIBS} Voronoi LineFollower)
 
 add_executable(partial_image Test/partial_image_voronoi.cpp)
-target_link_libraries(partial_image ${OpenCV_LIBS} VoronoiLib LineFollowerLib)
+target_link_libraries(partial_image ${OpenCV_LIBS} Voronoi LineFollower)
 
 add_subdirectory(include)
 add_subdirectory(Test)
@@ -80,8 +80,8 @@ FILE(GLOB files_utils "${CMAKE_CURRENT_SOURCE_DIR}/include/Utils/*.hpp")
 INSTALL(FILES ${files_utils} DESTINATION include/vodigrex/utils)
 
 INSTALL(FILES vodigrex-config.cmake DESTINATION lib/vodigrex)
-INSTALL(TARGETS VoronoiLib DESTINATION lib/vodigrex)
-INSTALL(TARGETS LineFollowerLib DESTINATION lib/vodigrex)
+INSTALL(TARGETS Voronoi DESTINATION lib/vodigrex)
+INSTALL(TARGETS LineFollower DESTINATION lib/vodigrex)
 
 install(TARGETS vodigrex RUNTIME DESTINATION bin)
 install(TARGETS test_line_follower RUNTIME DESTINATION bin)
