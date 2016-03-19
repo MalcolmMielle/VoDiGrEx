@@ -39,7 +39,10 @@ inline void AASS::vodigrex::LineFollower::lineThinningAlgo()
 	std::cout << "BASE line " << std::endl;
 	
 	while(_LP.x != -1 && _LP.y != -1){
-
+		
+		cv::imshow("during", _map_in);
+		cv::waitKey(1);
+		
 		//Get all the next line to explore
 		std::vector<cv::Point2i> all_point;
 		bool non_dead_end = findNextLPRP(all_point);
@@ -171,8 +174,8 @@ inline void AASS::vodigrex::LineFollower::removeLineSegment(cv::Mat& c)
 
 inline void AASS::vodigrex::LineFollower::drawLine()
 {
-	cv::line(_map_result, _last_drawing_point, cv::Point((_LP.x + _RP.x)/2, (_LP.y + _LP.y)/2), cv::Scalar(255));	
-	_last_drawing_point = cv::Point((_LP.x + _RP.x)/2, (_LP.y + _LP.y)/2);
+	cv::line(_map_result, _last_drawing_point, cv::Point((_LP.x + _RP.x)/2, (_LP.y + _RP.y)/2), cv::Scalar(255));	
+	_last_drawing_point = cv::Point((_LP.x + _RP.x)/2, (_LP.y + _RP.y)/2);
 }
 
 inline void AASS::vodigrex::LineFollower::upResize()
@@ -475,6 +478,8 @@ inline void AASS::vodigrex::LineFollower::moveForward()
 		type = typeOfIntersection(_W);
 	}
 	
+	std::cout << "At the end type : " << type << std::endl;
+	cv::imshow("Dyn win", _W);
 }
 
 
