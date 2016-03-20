@@ -196,8 +196,6 @@ inline void AASS::vodigrex::LineFollower::upResize(bool north, bool est, bool so
 	int width =  _W.size().width;
 	int height =  _W.size().height;
 	
-// 	std::cout << "Value of all " << north << est << south << west << x << y << width << height << _map_in.size().width << x + width != _map_in.size().width-1 << std::endl;
-	
 	if(north == true && x - 1 >= 0){
 		x = x - 1;
 		emergency_flag = false;
@@ -209,7 +207,6 @@ inline void AASS::vodigrex::LineFollower::upResize(bool north, bool est, bool so
 		}
 	}
 	else if(south == true && x + width != _map_in.size().width-1){
-// 		std::cout << "Should be true" << std::endl;
 		emergency_flag = false;
 		width++;		
 	}

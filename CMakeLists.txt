@@ -70,7 +70,7 @@ add_custom_target(uninstall
 FILE(GLOB files "${CMAKE_CURRENT_SOURCE_DIR}/include/*.hpp")
 INSTALL(FILES ${files} DESTINATION include/vodigrex)
 
-FILE(GLOB files_linef "${CMAKE_CURRENT_SOURCE_DIR}/include/LineFollower/*.hpp")
+FILE(GLOB files_linef "${CMAKE_CURRENT_SOURCE_DIR}/include/LineFollower/*.hpp" "${CMAKE_CURRENT_SOURCE_DIR}/include/LineFollower/*.tpl")
 INSTALL(FILES ${files_linef} DESTINATION include/vodigrex/linefollower)
 
 FILE(GLOB files_voro "${CMAKE_CURRENT_SOURCE_DIR}/include/VoronoiDiagram/*.hpp")
