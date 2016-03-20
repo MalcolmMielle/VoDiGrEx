@@ -58,6 +58,7 @@ inline void AASS::vodigrex::LineFollower::lineThinningAlgo()
 		
 		//Intersection or dead end
 		if( all_point.size() > 2 || non_dead_end == false){
+			cv::waitKey(0);
 			addPoint2Explore(all_point/*, created*/);
 			getNewBranch();					
 		}
@@ -178,7 +179,7 @@ inline void AASS::vodigrex::LineFollower::drawLine()
 	_last_drawing_point = cv::Point((_LP.x + _RP.x)/2, (_LP.y + _RP.y)/2);
 }
 
-inline void AASS::vodigrex::LineFollower::upResize()
+inline void AASS::vodigrex::LineFollower::upResize(bool north, bool est, bool south, bool west)
 {
 	
 	if(_W.size().width >= _map_in.size().width && _W.size().height >= _map_in.size().height){
@@ -195,38 +196,40 @@ inline void AASS::vodigrex::LineFollower::upResize()
 	int width =  _W.size().width;
 	int height =  _W.size().height;
 	
-	if(x - 1 >= 0){
+// 	std::cout << "Value of all " << north << est << south << west << x << y << width << height << _map_in.size().width << x + width != _map_in.size().width-1 << std::endl;
+	
+	if(north == true && x - 1 >= 0){
 		x = x - 1;
 		emergency_flag = false;
-		if(x + width + 2 < _map_in.size().width-1 ){
+		if(south == true && x + width + 2 < _map_in.size().width-1 ){
 			width = width + 2;
 		}
 		else if (x + width != _map_in.size().width-1){
 			width++;
 		}
 	}
-	else if (x + width != _map_in.size().width-1){
+	else if(south == true && x + width != _map_in.size().width-1){
+// 		std::cout << "Should be true" << std::endl;
 		emergency_flag = false;
-		width++;
+		width++;		
 	}
-	
-	if(y - 1 >=0){
+	if(est == true && y - 1 >=0){
 		y = y - 1;
 		emergency_flag = false;
-		if(y +height + 2 < _map_in.size().height-1){
+		if(west == true && y +height + 2 < _map_in.size().height-1){
 			height = height + 2;
 		}
-		else if (y +height != _map_in.size().height-1){
+		else if(y +height != _map_in.size().height-1){
 			height++;
 		}
 	}
-	else if (y +height != _map_in.size().height-1){
+	else if (west == true && y +height != _map_in.size().height-1){
 		emergency_flag = false;
 		height++;
 	}
 	
 	if(emergency_flag == true){
-		throw std::runtime_error("Lost the line, impossible to resize the dynamic window to find it again.");
+		throw std::runtime_error("Nothing happened in the resize of the dynamic window");
 	}
 	//Define new window
 	//Rect got everything inversed. It needs a point with first dim as col and second as row
@@ -342,7 +345,7 @@ inline bool AASS::vodigrex::LineFollower::findNextLPRP(std::vector< cv::Point2i 
 			dist_min = calculateDistance(all_points);
 			//If the distance between branches is not good enough
 			if(dist_min <= _d){
-				upResize();
+				upResize(true, true, true, true);
 			}
 		}
 		//get out of the loop
@@ -474,7 +477,7 @@ inline void AASS::vodigrex::LineFollower::moveForward()
 	int type = typeOfIntersection(_W);
 	//If we lost the line we upsize W
 	while(type == 0){
-		upResize();
+		upResize(true, true, true, true);
 		type = typeOfIntersection(_W);
 	}
 	

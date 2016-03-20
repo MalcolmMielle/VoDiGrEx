@@ -24,7 +24,7 @@ int main(){
 	bettergraph::PseudoGraph<AASS::vodigrex::SimpleNode, AASS::vodigrex::SimpleEdge> graph11 = llll_3.getGraph();
 	
 	cv::Mat maa_31 = line.clone();
-	maa_31.setTo(cv::Scalar(0));
+// 	maa_31.setTo(cv::Scalar(0));
 	draw(graph11, maa_31);
 	
 	cv::imshow("yoooo", llll_3.getResult());

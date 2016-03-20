@@ -132,7 +132,10 @@ namespace AASS{
 			bool findNextLPRP(std::vector< cv::Point2i >& all_points);
 			void addPoint2Explore(const std::vector< cv::Point2i >& all_points);
 			void removeLineSegment(cv::Mat& c);
-			void upResize();
+			/**
+			 * @brief Resize the dynamic windows the side here is starting with north and going clockwise
+			 */
+			void upResize(bool north, bool est, bool south, bool west);
 
 			/**
 			* @brief line thining algorithm after init.

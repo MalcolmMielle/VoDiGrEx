@@ -2,23 +2,23 @@
 #include "ThinkerVoronoi.hpp"
 
 int main(){
-// 	cv::Mat line = cv::imread("../Test/ObstacleMap.png");
+	cv::Mat line = cv::imread("../Test/ObstacleMap.png");
 	AASS::vodigrex::LineFollower llll_3;
-// 
-// 	llll_3.setD(2);
-// 	llll_3.inputMap(line);
-// 	llll_3.thin();
-// 	
-// // 	llll_3.printGraph();
-// 	//g.fromCustom2Boost(llll_3.getIntersections());
-// 	
-// // 	cv::Mat maa_33 = line.clone();
-// // 	maa_33.setTo(cv::Scalar(0));
-// // 	llll_3.drawGraph(maa_3);
-// 	
-// 	cv::imshow("yoooo", llll_3.getResult());
-// 	cv::imshow("graph", line);
-// 	cv::waitKey(0);
+
+	llll_3.setD(2);
+	llll_3.inputMap(line);
+	llll_3.thin();
+	
+// 	llll_3.printGraph();
+	//g.fromCustom2Boost(llll_3.getIntersections());
+	
+// 	cv::Mat maa_33 = line.clone();
+// 	maa_33.setTo(cv::Scalar(0));
+// 	llll_3.drawGraph(maa_3);
+	
+	cv::imshow("yoooo", llll_3.getResult());
+	cv::imshow("graph", line);
+	cv::waitKey(0);
 // 	
 // // 	AASS::vodigrex::LineFollower llll_3;
 // 	
@@ -58,7 +58,7 @@ int main(){
 // 	cv::waitKey(0);
 // 	
 	
-	cv::Mat bugtes = cv::imread("../Test/tesbug.png");
+	cv::Mat bugtes = cv::imread("../Test/testbug2.png");
 	
 	llll_3.clear();
 	llll_3.setD(2);
