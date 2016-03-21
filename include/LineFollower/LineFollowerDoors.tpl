@@ -89,8 +89,8 @@ void LineFollowerDoors<VertexType, EdgeType>::lineThinningAlgo(Vertex& index_dad
 			//Not a new intersection but still an intersection
 			else{
 				if(new_dad != dad_vertex){
-					bettergraph::PseudoGraph<SimpleNode, SimpleEdge>::Edge ed;
-					SimpleEdge sed;
+					typename bettergraph::PseudoGraph<VertexType, EdgeType>::Edge ed;
+					EdgeType sed;
 					sed.setLine(this->_line);
 					this->_line.clear();
 					this->_graph.addEdge(ed, new_dad, dad_vertex, sed);
@@ -110,8 +110,8 @@ void LineFollowerDoors<VertexType, EdgeType>::lineThinningAlgo(Vertex& index_dad
 			
 			if(already_seen == true){
 				if(loop_vertex != dad_vertex){
-					bettergraph::PseudoGraph<SimpleNode, SimpleEdge>::Edge ed;
-					SimpleEdge sed;
+					typename bettergraph::PseudoGraph<VertexType, EdgeType>::Edge ed;
+					EdgeType sed;
 					sed.setLine(this->_line);
 					this->_line.clear();
 					this->_graph.addEdge(ed, loop_vertex, dad_vertex, sed);

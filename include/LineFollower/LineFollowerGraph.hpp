@@ -42,8 +42,8 @@ namespace AASS{
 				clear();
 			}
 			
-			const bettergraph::PseudoGraph<SimpleNode, SimpleEdge>& getGraph() const {return _graph;}
-			bettergraph::PseudoGraph<SimpleNode, SimpleEdge> getGraph() {return _graph;}
+			const bettergraph::PseudoGraph<VertexType, EdgeType>& getGraph() const {return _graph;}
+			bettergraph::PseudoGraph<VertexType, EdgeType> getGraph() {return _graph;}
 			virtual void clear();
 			
 			void printIntersection(){
@@ -82,11 +82,11 @@ namespace AASS{
 				cv::Size s;
 				cv::Point2i p_dyn_window;
 				_W.locateROI(s, p_dyn_window);
-				SimpleNode vtype;
+				VertexType vtype;
 				vtype.setX(p_dyn_window.x + (_W.size().width/2));
 				vtype.setY(p_dyn_window.y + (_W.size().height/2));
 				
-				SimpleEdge sed;
+				EdgeType sed;
 				sed.setLine(_line);
 				_line.clear();
 				
@@ -98,7 +98,7 @@ namespace AASS{
 				cv::Size s;
 				cv::Point2i p_dyn_window;
 				_W.locateROI(s, p_dyn_window);
-				SimpleNode vtype;
+				VertexType vtype;
 				vtype.setX(p_dyn_window.x + (_W.size().width/2));
 				vtype.setY(p_dyn_window.y + (_W.size().height/2));
 				_graph.addVertex(vertex_out, vtype);

@@ -40,8 +40,8 @@ inline void AASS::vodigrex::LineFollower::lineThinningAlgo()
 	
 	while(_LP.x != -1 && _LP.y != -1){
 		
-		cv::imshow("during", _map_in);
-		cv::waitKey(1);
+// 		cv::imshow("during", _map_in);
+// 		cv::waitKey(1);
 		
 		//Get all the next line to explore
 		std::vector<cv::Point2i> all_point;
@@ -58,7 +58,7 @@ inline void AASS::vodigrex::LineFollower::lineThinningAlgo()
 		
 		//Intersection or dead end
 		if( all_point.size() > 2 || non_dead_end == false){
-			cv::waitKey(0);
+// 			cv::waitKey(0);
 			addPoint2Explore(all_point/*, created*/);
 			getNewBranch();					
 		}
@@ -478,8 +478,8 @@ inline void AASS::vodigrex::LineFollower::moveForward()
 		type = typeOfIntersection(_W);
 	}
 	
-	std::cout << "At the end type : " << type << std::endl;
-	cv::imshow("Dyn win", _W);
+// 	std::cout << "At the end type : " << type << std::endl;
+// 	cv::imshow("Dyn win", _W);
 }
 
 

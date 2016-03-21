@@ -22,10 +22,11 @@ namespace AASS{
 			int x;
 			int y;
 			SimpleNode(){};
-			int getX(){return x;}
-			int getY(){return y;}
+			int getX() const {return x;}
+			int getY() const {return y;}
 			void setX(int xx){ x = xx;}
 			void setY(int yy){ y = yy;}
+			void setPoint(int xx, int yy){ x = xx; y = yy;}
 		};
 
 		class SimpleEdge{
@@ -36,7 +37,9 @@ namespace AASS{
 			
 			void addEdgePosition(int x, int y) {line.push_back(std::pair< int, int> (x, y));}
 			void setLine(const std::vector< std::pair<int, int> >& l){line = l;}
+			
 			std::vector< std::pair<int, int> >& getLine(){return line;}
+			const std::vector< std::pair<int, int> >& getLine() const {return line;}
 		};
 
 		
