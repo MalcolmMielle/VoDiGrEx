@@ -11,17 +11,13 @@
 
 #include <opencv2/opencv.hpp>
 #include "LineFollowerGraph.hpp"
+#include "SimpleNodeNamed.hpp"
 
 namespace AASS{
 		
 	namespace vodigrex{
 		
-		class SimpleNodeNamed : public SimpleNode{
-		public:
-			std::string type;
-			void setType(const std::string& str){type = str;}
-			std::string getType() const {return type;}
-		};
+		
 
 		/**
 		* @brief Line follower algorithm to create a graph and a thinned image.
