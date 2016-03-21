@@ -2,13 +2,14 @@
 #define VODIGREX_UTILS_08032016
 
 #include "bettergraph/PseudoGraph.hpp"
-#include "SimpleNode.hpp"
+#include "LineFollower/LineFollowerDoors.hpp"
 #include <opencv2/opencv.hpp>
 
 namespace AASS{
 	namespace vodigrex{
 
-		inline void draw(const bettergraph::PseudoGraph<AASS::vodigrex::SimpleNode, AASS::vodigrex::SimpleEdge>::Vertex& v, bettergraph::PseudoGraph<AASS::vodigrex::SimpleNode, AASS::vodigrex::SimpleEdge> graph, cv::Mat& m)
+		template<typename VertexType, typename EdgeType>
+		inline void draw(const typename bettergraph::PseudoGraph<VertexType, EdgeType>::Vertex& v, bettergraph::PseudoGraph<VertexType, EdgeType> graph, cv::Mat& m)
 		{
 			cv::Scalar color;
 			if(m.channels() == 1){
@@ -26,8 +27,8 @@ namespace AASS{
 				
 		}
 
-				
-		inline void draw(bettergraph::PseudoGraph<AASS::vodigrex::SimpleNode, AASS::vodigrex::SimpleEdge> graph, cv::Mat& m)
+		template<typename VertexType, typename EdgeType>	
+		inline void draw(const typename bettergraph::PseudoGraph<VertexType, EdgeType> graph, cv::Mat& m)
 		{
 			
 			std::cout << "DRAW" << std::endl;

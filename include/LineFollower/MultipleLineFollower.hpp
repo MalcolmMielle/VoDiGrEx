@@ -11,7 +11,7 @@ namespace AASS{
 		
 		/**
 		* @brief Multiple-Lines follower algorithm to extract multiple graphs.
-		* 
+		* TODO template it to the Line follower and add Vertex and edge element in LineFollower
 		*/
 		template<typename VertexType = SimpleNode, typename EdgeType = SimpleEdge>
 		class MultipleLineFollower{

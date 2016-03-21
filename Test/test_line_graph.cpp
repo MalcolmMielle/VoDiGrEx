@@ -25,7 +25,7 @@ int main(){
 	
 	cv::Mat maa_31 = line.clone();
 	maa_31.setTo(cv::Scalar(0));
-	draw(graph11, maa_31);
+	AASS::vodigrex::draw<AASS::vodigrex::SimpleNode, AASS::vodigrex::SimpleEdge>(graph11, maa_31);
 	
 	cv::imshow("yoooo", llll_3.getResult());
 // 	cv::imshow("graph", line);
@@ -66,7 +66,7 @@ int main(){
 	
 	cv::Mat maa_3 = vlll_3.clone();
 	maa_3.setTo(cv::Scalar(0));
-	draw(graph, maa_3);
+	AASS::vodigrex::draw<AASS::vodigrex::SimpleNode, AASS::vodigrex::SimpleEdge>(graph, maa_3);
 	
 	cv::imshow("yoooo", llll_3.getResult());
 	cv::imshow("graph", maa_3);

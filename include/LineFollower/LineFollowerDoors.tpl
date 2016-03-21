@@ -19,61 +19,6 @@ void LineFollowerDoors<VertexType, EdgeType>::lineThinningAlgo(Vertex& index_dad
 		cv::Point2i new_p;
 		new_p.x = p_dyn_window.x + (this->_W.cols / 2);
 		new_p.y = p_dyn_window.y + (this->_W.rows / 2);
-		
-		
-		/*
-		//Crossing a door
-		if(wCrossDoor()){
-			
-			Vertex new_dad;
-			bool is_new = loopDetection( new_p, dad_vertex, new_dad);
-			
-			Vertex created = new_dad;
-			std::cout << "GOT A DOOR" << std::endl;
-			if(is_new == true){
-				std::string s = "Door";
-				_graph.addVertex(s, m, new_p, created, new_dad);
-			}
-			else{
-				if(new_dad != dad_vertex){
-					_graph.addEdge(new_dad, dad_vertex);
-				}
-			}
-			
-			addPoint2Explore(all_point, created);
-			removeLineSegment(_W);
-			
-			if(_LRP_to_explore.size() > 0){
-			
-				//Access new LP RP
-				_RP = _LRP_to_explore[0].first; 
-				_LP = _LRP_to_explore[0].second;
-				dad_vertex = _dad_vertex.at(0);
-				_last_drawing_point = _last_drawing_point_deque[0];
-				//Remove them
-				_LRP_to_explore.pop_front();
-				_dad_vertex.pop_front();
-				_last_drawing_point_deque.pop_front();
-				
-				drawLine();
-				moveForward();
-			}
-			//END
-			else{
-// 					std::cout << "size is : " << all_point.size() << std::endl;
-// 					std::cout << "end"<<std::endl;
-				_LP.x = -1;
-				_LP.y = -1;
-			}
-			
-			//Needed to avoid an infinite loop :
-			type = typeOfIntersection(_W);
-			
-		}
-		*/
-		
-		
-		
 
 		//Intersection or dead end
 		if( all_point.size() > 2 || non_dead_end == false || wCrossDoor()){
@@ -81,16 +26,25 @@ void LineFollowerDoors<VertexType, EdgeType>::lineThinningAlgo(Vertex& index_dad
 			//USE : _all_crossings
 			Vertex new_dad;
 			bool already_exist = this->loopDetection(new_p, new_dad);
+			
+			VertexType vert;
+			if(wCrossDoor()){
+				vert.setType("keypoint");
+			}
+			else{
+				vert.setType("normal");
+			}
 
 			//New intersection
 			if(already_exist == false){
 				this->addVertex(dad_vertex, new_dad);
+				this->_graph[new_dad] = vert;
 			}
 			//Not a new intersection but still an intersection
 			else{
 				if(new_dad != dad_vertex){
-					bettergraph::PseudoGraph<SimpleNode, SimpleEdge>::Edge ed;
-					SimpleEdge sed;
+					typename bettergraph::PseudoGraph<VertexType, EdgeType>::Edge ed;
+					EdgeType sed;
 					sed.setLine(this->_line);
 					this->_line.clear();
 					this->_graph.addEdge(ed, new_dad, dad_vertex, sed);
@@ -110,8 +64,8 @@ void LineFollowerDoors<VertexType, EdgeType>::lineThinningAlgo(Vertex& index_dad
 			
 			if(already_seen == true){
 				if(loop_vertex != dad_vertex){
-					bettergraph::PseudoGraph<SimpleNode, SimpleEdge>::Edge ed;
-					SimpleEdge sed;
+					typename bettergraph::PseudoGraph<VertexType, EdgeType>::Edge ed;
+					EdgeType sed;
 					sed.setLine(this->_line);
 					this->_line.clear();
 					this->_graph.addEdge(ed, loop_vertex, dad_vertex, sed);
