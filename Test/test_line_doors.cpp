@@ -68,8 +68,8 @@ int main()
 	
 	cv::Mat maa_3 = vlll_3.clone();
 	maa_3.setTo(cv::Scalar(0));
-	bettergraph::PseudoGraph<AASS::vodigrex::SimpleNode, AASS::vodigrex::SimpleEdge> graph = llll_3.getGraph();
-	draw(graph, maa_3);
+	bettergraph::PseudoGraph<AASS::vodigrex::SimpleNodeNamed, AASS::vodigrex::SimpleEdge> graph = llll_3.getGraph();
+	AASS::vodigrex::draw<AASS::vodigrex::SimpleNodeNamed, AASS::vodigrex::SimpleEdge>(graph, maa_3);
 // 	cv::line(maa_3, dpoint[0].first, dpoint[0].second, cv::Scalar(255));	
 
 	

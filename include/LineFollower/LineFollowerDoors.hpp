@@ -15,6 +15,13 @@
 namespace AASS{
 		
 	namespace vodigrex{
+		
+		class SimpleNodeNamed : public SimpleNode{
+		public:
+			std::string type;
+			void setType(const std::string& str){type = str;}
+			std::string getType() const {return type;}
+		};
 
 		/**
 		* @brief Line follower algorithm to create a graph and a thinned image.
@@ -24,7 +31,7 @@ namespace AASS{
 		* This algorithm is iterative and able to adapt to any line size.
 		* Create a thinned image and graph of the lines.
 		*/
-		template<typename VertexType = SimpleNode, typename EdgeType = SimpleEdge>
+		template<typename VertexType = SimpleNodeNamed, typename EdgeType = SimpleEdge>
 		class LineFollowerDoors : public LineFollowerGraph<VertexType, EdgeType>{
 			
 			

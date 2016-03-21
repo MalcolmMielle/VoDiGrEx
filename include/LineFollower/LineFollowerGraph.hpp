@@ -78,6 +78,7 @@ namespace AASS{
 			*/
 			virtual void lineThinningAlgo(Vertex& index_dad);
 			
+			//TODO vertex_out should be consistent
 			void addVertex(const Vertex& vertex_parent, Vertex& vertex_out){
 				cv::Size s;
 				cv::Point2i p_dyn_window;
