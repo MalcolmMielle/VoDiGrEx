@@ -43,7 +43,7 @@ template<typename VertexType, typename EdgeType>
 void LineFollowerGraph<VertexType, EdgeType>::lineThinningAlgo(Vertex& index_dad)
 {
 	
-	std::cout << "LINE THINING GRAPH" << std::endl;
+// 	std::cout << "LINE THINING GRAPH" << std::endl;
 
 	Vertex dad_vertex = index_dad;
 	while(_LP.x != -1 && _LP.y != -1){
@@ -124,11 +124,13 @@ void LineFollowerGraph<VertexType, EdgeType>::getNewBranch(Vertex& parent)
 template<typename VertexType, typename EdgeType>
 void LineFollowerGraph<VertexType, EdgeType>::addPoint2Explore(const std::vector< cv::Point2i >& all_points, const typename bettergraph::PseudoGraph< VertexType, EdgeType>::Vertex& loop)
 {
+// 	std::cout << "Adding " << all_points.size()/2 << "prints" << std::endl;
 	//TODO probably don't need this
 	if(all_points.size() >= 2){
 		//index goes up
 		//dad_index++;
 		for(size_t i = 0 ; i < all_points.size() ; i=i+2){
+// 			std::cout << "One push" << std::endl;
 			_LRP_to_explore.push_back(std::pair<cv::Point2i, cv::Point2i>(all_points[i], all_points[i+1]));
 			_dad_vertex.push_back(loop);
 			_last_drawing_point_deque.push_back(_last_drawing_point);
@@ -154,7 +156,10 @@ void LineFollowerGraph<VertexType, EdgeType>::clear()
 template<typename VertexType, typename EdgeType>
 bool LineFollowerGraph<VertexType, EdgeType>::loopDetection(cv::Point2i new_p, typename AASS::vodigrex::LineFollowerGraph<VertexType, EdgeType>::Vertex& dad_vertex)
 {
+	
+// 	std::cout << "Total size " << _dad_vertex.size() << std::endl;
 	for(size_t i = 0 ; i < _dad_vertex.size(); ++i){
+// 		std::cout << "pb :S ? " << _dad_vertex.size() << std::endl;
 		if(_graph[_dad_vertex[i]].getX() <= new_p.x + _marge &&
 			_graph[_dad_vertex[i]].getX() >= new_p.x - _marge &&
 			_graph[_dad_vertex[i]].getY() <= new_p.y + _marge &&

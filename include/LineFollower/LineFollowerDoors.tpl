@@ -27,18 +27,17 @@ void LineFollowerDoors<VertexType, EdgeType>::lineThinningAlgo(Vertex& index_dad
 			Vertex new_dad;
 			bool already_exist = this->loopDetection(new_p, new_dad);
 			
-			VertexType vert;
-			if(wCrossDoor()){
-				vert.setType("keypoint");
-			}
-			else{
-				vert.setType("normal");
-			}
+			
 
 			//New intersection
 			if(already_exist == false){
 				this->addVertex(dad_vertex, new_dad);
-				this->_graph[new_dad] = vert;
+				if(wCrossDoor()){
+					this->_graph[new_dad].setType("keypoint");
+				}
+				else{
+					this->_graph[new_dad].setType("normal");
+				}
 			}
 			//Not a new intersection but still an intersection
 			else{
@@ -147,7 +146,7 @@ bool LineFollowerDoors<VertexType, EdgeType>::wCrossDoor()
 	int height = this->_W.rows;
 	int width = this->_W.cols;
 	
-// 			std::cout << "trying the door detection with " << _doors.size() << std::endl;
+//  			std::cout << "trying the door detection with " << _doors.size() << std::endl;
 	
 	for(size_t i = 0 ; i < _doors.size() ; i = i+2){
 // 				std::cout << " at : " << _doors[i].x << " at : " << _doors[i].y << std::endl;
