@@ -147,6 +147,7 @@ void LineFollowerGraph<VertexType, EdgeType>::clear()
 	//reset Boost graph
 	_graph.clear(); 
 	_dad_vertex.clear();
+	_line.clear();
 	LineFollower::clear();
 }
 

@@ -47,6 +47,9 @@ target_link_libraries(test_line_doors ${OpenCV_LIBS} Voronoi LineFollower)
 add_executable(test_multi Test/test_multi.cpp)
 target_link_libraries(test_multi ${OpenCV_LIBS} Voronoi LineFollower)
 
+add_executable(test_multi_doors Test/test_multi_doors.cpp)
+target_link_libraries(test_multi_doors ${OpenCV_LIBS} Voronoi LineFollower)
+
 add_executable(partial_image Test/partial_image_voronoi.cpp)
 target_link_libraries(partial_image ${OpenCV_LIBS} Voronoi LineFollower)
 
