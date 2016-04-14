@@ -24,7 +24,7 @@ namespace AASS{
  			
 			typedef typename bettergraph::PseudoGraph<VertexType, EdgeType>::Vertex Vertex;
 			
-			/// @brief deque of all parent vertex with line to explore.
+			/// @brief deque of all parent vertex with line to explore. The same vertex is inputted here as much time as it has exit branches
 			std::deque< Vertex > _dad_vertex;
 			/// @brief Final graph
 			bettergraph::PseudoGraph<VertexType, EdgeType> _graph;
@@ -105,7 +105,7 @@ namespace AASS{
 				_graph.addVertex(vertex_out, vtype);
 			}
 			
-			void getNewBranch(Vertex& parent);
+			virtual void getNewBranch(Vertex& parent);
 			
 		};
 

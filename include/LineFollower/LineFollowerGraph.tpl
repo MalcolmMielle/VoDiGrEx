@@ -58,9 +58,37 @@ void LineFollowerGraph<VertexType, EdgeType>::lineThinningAlgo(Vertex& index_dad
 		cv::Point2i new_p;
 		new_p.x = p_dyn_window.x + (_W.cols / 2);
 		new_p.y = p_dyn_window.y + (_W.rows / 2);
+		
+// #ifdef DEBUG
+// 		cv::Mat print;
+// 		this->_map_in.copyTo(print);
+// // 		cv::Size s;
+// // 		cv::Point2i p_dyn_window;
+// // 		_W.locateROI(s, p_dyn_window);
+// 		cv::Point2i second_point = p_dyn_window;
+// 		second_point.x = second_point.x + _W.size().width;
+// 		second_point.y = second_point.y + _W.size().height;
+// 		cv::rectangle( print, p_dyn_window, second_point, cv::Scalar( 255 ), 1, 4 );
+// 		cv::imshow("tmp", print);
+// 		cv::waitKey(30);
+// #endif
 
 		//Intersection or dead end
 		if( all_point.size() > 2 || non_dead_end == false){
+			
+// #ifdef DEBUG
+// 		cv::Mat print;
+// 		this->_map_in.copyTo(print);
+// // 		cv::Size s;
+// // 		cv::Point2i p_dyn_window;
+// // 		_W.locateROI(s, p_dyn_window);
+// 		cv::Point2i second_point = p_dyn_window;
+// 		second_point.x = second_point.x + _W.size().width;
+// 		second_point.y = second_point.y + _W.size().height;
+// 		cv::rectangle( print, p_dyn_window, second_point, cv::Scalar( 255 ), 1, 4 );
+// 		cv::imshow("tmp", print);
+// 		cv::waitKey(0);
+// #endif
 			
 			//USE : _all_crossings
 			Vertex new_dad;
@@ -117,7 +145,30 @@ void LineFollowerGraph<VertexType, EdgeType>::getNewBranch(Vertex& parent)
 		parent = _dad_vertex.at(0);
 		_dad_vertex.pop_front();
 	}
-	LineFollower::getNewBranch();
+	
+// 	LineFollower::getNewBranch();
+	
+	if(this->_LRP_to_explore.size() > 0){
+		//Access new LP RP
+		this->_RP = _LRP_to_explore[0].first; 
+		this->_LP = _LRP_to_explore[0].second;
+		this->_last_drawing_point = _last_drawing_point_deque[0];
+		//Remove them
+		this->_LRP_to_explore.pop_front();
+		this->_last_drawing_point_deque.pop_front();
+		
+		bool ret = LineFollower::testNewBranchNotBlackandMoveForward();
+		if(ret == false){
+			getNewBranch(parent);
+		}
+		
+	}
+	else{
+		_LP.x = -1;
+		_LP.y = -1;
+	}
+	
+	
 }
 
 
@@ -166,9 +217,22 @@ bool LineFollowerGraph<VertexType, EdgeType>::loopDetection(cv::Point2i new_p, t
 			_graph[_dad_vertex[i]].getY() <= new_p.y + _marge &&
 			_graph[_dad_vertex[i]].getY() >= new_p.y - _marge){
 			dad_vertex = _dad_vertex[i];
+		
+// 			std::cout << "LOOP DETECTION YES" << std::endl;
+			return true;
+		}
+		if( ( (_LRP_to_explore[i].first.x + _LRP_to_explore[i].second.x) /2 ) <= new_p.x + _marge &&
+			( (_LRP_to_explore[i].first.x + _LRP_to_explore[i].second.x) /2 ) >= new_p.x - _marge &&
+			( (_LRP_to_explore[i].first.y + _LRP_to_explore[i].second.y) /2 ) <= new_p.y + _marge &&
+			( (_LRP_to_explore[i].first.y + _LRP_to_explore[i].second.y) /2 ) >= new_p.y - _marge){
+			dad_vertex = _dad_vertex[i];
+		
+// 			std::cout << "LOOP DETECTION YES WEIRD" << std::endl;
+			
 			return true;
 		}
 	}
+// 	std::cout << "NO DETECTION :|" << std::endl;
 	return false;
 }
 

@@ -156,7 +156,11 @@ inline void AASS::vodigrex::LineFollower::getNewBranch()
 		_LRP_to_explore.pop_front();
 		_last_drawing_point_deque.pop_front();
 		
-		moveForward();
+		bool ret = testNewBranchNotBlackandMoveForward();
+		if(ret == false){
+			getNewBranch();
+		}
+		
 	}
 	else{
 		_LP.x = -1;
@@ -477,6 +481,88 @@ inline void AASS::vodigrex::LineFollower::moveForward()
 		upResize(true, true, true, true);
 		type = typeOfIntersection(_W);
 	}
+	
+// 	std::cout << "At the end type : " << type << std::endl;
+// 	cv::imshow("Dyn win", _W);
+}
+
+
+
+inline bool AASS::vodigrex::LineFollower::testNewBranchNotBlackandMoveForward()
+{
+	drawLine();
+	removeLineSegment(_W);
+	
+	// Find min and max points of the new points
+	int max_row = 0;
+	int min_row = 0;
+	int max_col = 0;
+	int min_col = 0;
+	if( _LP.y > _RP.y){
+		max_row = _LP.y;
+		min_row = _RP.y;
+	}
+	else{
+		max_row = _RP.y;
+		min_row = _LP.y;
+	}
+	
+	if(_LP.x > _RP.x){
+		max_col = _LP.x;
+		min_col = _RP.x;
+	}
+	else{
+		max_col = _RP.x;
+		min_col = _LP.x;
+	}
+	
+// 		std::cout << "defining new mat" << std::endl;
+	int point_min_col = 0;
+	int point_min_row = 0;
+	int point_max_col = 0;
+	int point_max_row = 0;
+	
+	if( min_col - _d >= 0 ){
+		point_min_col = min_col - _d;
+	}
+	else{
+		point_min_col = 0;
+	}		
+	if( min_row - _d >= 0){
+		point_min_row = min_row - _d;
+	}
+	else{
+		point_min_row = 0;
+	}
+	
+	if(max_col + _d < _map_in.cols){
+		point_max_col = max_col + _d;
+	}
+	else{
+		point_max_col = _map_in.cols-1;
+	}
+	if(max_row + _d < _map_in.rows){
+		point_max_row = max_row + _d;
+	}
+	else{
+		point_max_row = _map_in.rows-1;
+	}
+	
+	//Define new window
+	//Rect got everything inversed. It needs a point with first dim as col and second as row
+	_W = _map_in(cv::Rect( cv::Point2i(point_min_col , point_min_row ) , cv::Point2i(point_max_col, point_max_row )) );
+	
+	//Resize the window to match the line
+	int type = typeOfIntersection(_W);
+	//If we lost the line we upsize W
+	if(type == -1){
+// 		std::cout << "PUTAIN" << std::endl;
+// 		exit(0);
+		return false;
+	}
+// 	std::cout << "this is the type" << type << std::endl;
+// 	cv::waitKey(0);
+	return true;
 	
 // 	std::cout << "At the end type : " << type << std::endl;
 // 	cv::imshow("Dyn win", _W);

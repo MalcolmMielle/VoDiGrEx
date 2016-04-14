@@ -41,6 +41,18 @@ namespace AASS{
 			std::vector< std::pair<int, int> >& getLine(){return line;}
 			const std::vector< std::pair<int, int> >& getLine() const {return line;}
 		};
+		
+		inline std::ostream& operator<<(std::ostream& in, const SimpleNode &p){
+			in << p.x << " " ; in << p.y; return in;
+		}
+
+		
+		inline std::ostream& operator<<(std::ostream& in, const SimpleEdge &p){
+// 			for(size_t i = 0 ; i < p.getLine().size() ; ++i){
+// 				in << p.getLine()[i].first ; in << p.getLine()[i].second; 
+// 			}
+			return in;
+		}
 
 		
 	}

@@ -6,7 +6,11 @@ int main(){
 	cv::Mat line = cv::imread("../Test/ObstacleMap.png", CV_LOAD_IMAGE_GRAYSCALE);
 	AASS::vodigrex::MultipleLineFollower<> llll_3;
 
-	llll_3.setD(2);
+	llll_3.setD(3);
+	
+	llll_3.setMarge(10);
+	
+	/*
 	llll_3.inputMap(line);
 	llll_3.thin();
 	
@@ -33,7 +37,7 @@ int main(){
 	cv::waitKey(0);
 	
 // 	AASS::vodigrex::LineFollower llll_3;
-	llll_3.setMarge(10);
+	llll_3.setMarge(10);*/
 	
 	llll_3.clear();
 
@@ -68,6 +72,10 @@ int main(){
 	maa_3.setTo(cv::Scalar(0));
 	draw(graph, maa_3);
 	
+		std::cout << "Number of nodes " << graph.getNumVertices() << std::endl;
+		
+	graph.print();
+
 	cv::imshow("yoooo", llll_3.getResult());
 	cv::imshow("graph", maa_3);
 	cv::waitKey(0);

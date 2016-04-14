@@ -68,6 +68,7 @@ int main(){
 	maa_3.setTo(cv::Scalar(0));
 	AASS::vodigrex::draw<AASS::vodigrex::SimpleNode, AASS::vodigrex::SimpleEdge>(graph, maa_3);
 	
+	std::cout << "Number of nodes " << graph.getNumVertices() << std::endl;
 	cv::imshow("yoooo", llll_3.getResult());
 	cv::imshow("graph", maa_3);
 	cv::waitKey(0);

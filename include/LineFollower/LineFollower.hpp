@@ -47,7 +47,7 @@ namespace AASS{
 			/// @brief Double point Lp and RP
 			std::deque<std::pair< cv::Point2i, cv::Point2i > > _LRP_to_explore; 
 			/// @brief parent index of the Lp and Rp explored
-			std::deque< int > _dads_index;
+// 			std::deque< int > _dads_index;
 			/// @brief deque of all point in space of the parent of line to explore
 			std::deque<cv::Point2i> _last_drawing_point_deque;	
 			/// @brief Trigger for the white color for the line detection. value are between 0 (pitch dark) and 255 (full white)
@@ -128,6 +128,7 @@ namespace AASS{
 			 * @brief move the dynamic window forward and resize it to match the new anchor points
 			 */
 			void moveForward();
+			bool testNewBranchNotBlackandMoveForward();
 			void drawLine();
 			bool findNextLPRP(std::vector< cv::Point2i >& all_points);
 			void addPoint2Explore(const std::vector< cv::Point2i >& all_points);
@@ -151,7 +152,7 @@ namespace AASS{
 			*/
 			double calculateDistance(std::vector<cv::Point2i>& all_points);
 			
-			void getNewBranch();
+			virtual void getNewBranch();
 			
 		};
 
