@@ -28,6 +28,7 @@ int main(){
 	AASS::vodigrex::draw<AASS::vodigrex::SimpleNode, AASS::vodigrex::SimpleEdge>(graph11, maa_31);
 	
 	cv::imshow("yoooo", llll_3.getResult());
+	cv::imshow("input", line);
 // 	cv::imshow("graph", line);
 	cv::imshow("graph11", maa_31);
 	cv::waitKey(0);

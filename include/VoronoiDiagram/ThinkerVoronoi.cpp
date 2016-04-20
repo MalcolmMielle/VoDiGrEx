@@ -186,8 +186,6 @@ void AASS::vodigrex::ThinkerVoronoi::voronoiLaplaceVoro()
 // 	kernel.at<float>(1,1) = -8;
 // 	std::cout << "Kernel : " << kernel << std::endl;
 // 	cv::filter2D(_voronoi, this->_map_result, -1 , kernel, cv::Point( -1, -1 ), 0, cv::BORDER_DEFAULT );
-
-	
 // 	std::cout << "channels " <<_voronoi.channels() << " " << this->_map_result.channels()<<std::endl;
 
 // 	cv::imshow("laplace", this->_map_result);

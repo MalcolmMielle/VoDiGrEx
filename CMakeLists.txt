@@ -1,3 +1,6 @@
+#for debug : cmake -DCMAKE_BUILD_TYPE=Debug /path/to/source
+
+
 cmake_minimum_required(VERSION 2.6)
 project(vodigrex)
 
@@ -52,6 +55,12 @@ target_link_libraries(test_multi_doors ${OpenCV_LIBS} Voronoi LineFollower)
 
 add_executable(partial_image Test/partial_image_voronoi.cpp)
 target_link_libraries(partial_image ${OpenCV_LIBS} Voronoi LineFollower)
+
+add_executable(test_evacuation Test/test_evacuation.cpp)
+target_link_libraries(test_evacuation ${OpenCV_LIBS} Voronoi LineFollower)
+
+add_executable(test_building Test/test_building.cpp)
+target_link_libraries(test_building ${OpenCV_LIBS} Voronoi LineFollower)
 
 add_subdirectory(include)
 add_subdirectory(Test)

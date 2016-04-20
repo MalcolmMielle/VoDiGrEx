@@ -128,6 +128,7 @@ namespace AASS{
 			 * @brief move the dynamic window forward and resize it to match the new anchor points
 			 */
 			void moveForward();
+			void moveForward(bool erase_W);
 			bool testNewBranchNotBlackandMoveForward();
 			void drawLine();
 			bool findNextLPRP(std::vector< cv::Point2i >& all_points);

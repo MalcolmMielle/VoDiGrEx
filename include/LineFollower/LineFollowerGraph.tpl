@@ -70,25 +70,11 @@ void LineFollowerGraph<VertexType, EdgeType>::lineThinningAlgo(Vertex& index_dad
 // 		second_point.y = second_point.y + _W.size().height;
 // 		cv::rectangle( print, p_dyn_window, second_point, cv::Scalar( 255 ), 1, 4 );
 // 		cv::imshow("tmp", print);
-// 		cv::waitKey(30);
+// 		cv::waitKey(10);
 // #endif
 
 		//Intersection or dead end
 		if( all_point.size() > 2 || non_dead_end == false){
-			
-// #ifdef DEBUG
-// 		cv::Mat print;
-// 		this->_map_in.copyTo(print);
-// // 		cv::Size s;
-// // 		cv::Point2i p_dyn_window;
-// // 		_W.locateROI(s, p_dyn_window);
-// 		cv::Point2i second_point = p_dyn_window;
-// 		second_point.x = second_point.x + _W.size().width;
-// 		second_point.y = second_point.y + _W.size().height;
-// 		cv::rectangle( print, p_dyn_window, second_point, cv::Scalar( 255 ), 1, 4 );
-// 		cv::imshow("tmp", print);
-// 		cv::waitKey(0);
-// #endif
 			
 			//USE : _all_crossings
 			Vertex new_dad;
@@ -100,17 +86,40 @@ void LineFollowerGraph<VertexType, EdgeType>::lineThinningAlgo(Vertex& index_dad
 			}
 			//Not a new intersection but still an intersection
 			else{
-				if(new_dad != dad_vertex){
+				//Should be allowed to have self loop since it's a pseudo graph
+// 				if(new_dad != dad_vertex){
 					typename bettergraph::PseudoGraph<VertexType, EdgeType>::Edge ed;
 					EdgeType sed;
 					sed.setLine(_line);
 					_line.clear();
 					_graph.addEdge(ed, new_dad, dad_vertex, sed);
-				}
+// 				}
 			}
 			
 			addPoint2Explore(all_point, new_dad);
 			getNewBranch(dad_vertex);
+// 			LineFollower::moveForward(false);
+			
+// #ifdef DEBUG
+// 		cv::Mat print;
+// 		this->_map_in.copyTo(print);
+// 		cv::Size s2;
+// 		cv::Point2i p_dyn_window2;
+// 		_W.locateROI(s2, p_dyn_window2);
+// 		second_point = p_dyn_window2;
+// 		second_point.x = second_point.x + _W.size().width;
+// 		second_point.y = second_point.y + _W.size().height;
+// 		cv::rectangle( print, p_dyn_window2, second_point, cv::Scalar( 255 ), 1, 4 );
+// 		cv::imshow("tmp", print);
+// 		
+// 		bettergraph::PseudoGraph<VertexType, EdgeType> graph = this->getGraph();
+// 		cv::Mat maa_3 = this->_map_in.clone();
+// 		maa_3.setTo(cv::Scalar(0));
+// 		AASS::vodigrex::draw<VertexType, EdgeType>(graph, maa_3);
+// 		cv::imshow("tmp graph", maa_3);
+// 		
+// 		cv::waitKey(0);
+// #endif
 					
 			
 		}
@@ -141,6 +150,8 @@ void LineFollowerGraph<VertexType, EdgeType>::lineThinningAlgo(Vertex& index_dad
 template<typename VertexType, typename EdgeType>
 void LineFollowerGraph<VertexType, EdgeType>::getNewBranch(Vertex& parent)
 {
+	
+	std::cout << "get new branch siz eof line should be zero" << _line.size() << std::endl;
 	if(_dad_vertex.size() > 0){
 		parent = _dad_vertex.at(0);
 		_dad_vertex.pop_front();

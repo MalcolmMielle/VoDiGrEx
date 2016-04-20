@@ -35,9 +35,7 @@ void AASS::vodigrex::LineFollower::thin()
 
 inline void AASS::vodigrex::LineFollower::lineThinningAlgo()
 {
-	
-	std::cout << "BASE line " << std::endl;
-	
+		
 	while(_LP.x != -1 && _LP.y != -1){
 		
 // 		cv::imshow("during", _map_in);
@@ -245,7 +243,7 @@ inline void AASS::vodigrex::LineFollower::upResize(bool north, bool est, bool so
 
 
 /*
-* Return a list of all LP and RP extracted rom the dynamic window
+* Return a list of all LP and RP extracted from the dynamic window
 * return false is nothing is an the dynamic window
 */
 inline bool AASS::vodigrex::LineFollower::findNextLPRP(std::vector< cv::Point2i >& all_points)
@@ -409,11 +407,17 @@ inline double AASS::vodigrex::LineFollower::calculateDistance(std::vector< cv::P
 	
 }
 
-
 inline void AASS::vodigrex::LineFollower::moveForward()
 {
+	moveForward(true);
+}
+
+inline void AASS::vodigrex::LineFollower::moveForward(bool erase_W)
+{
 	drawLine();
-	removeLineSegment(_W);
+	if(erase_W == true){
+		removeLineSegment(_W);
+	}
 	
 	// Find min and max points of the new points
 	int max_row = 0;
@@ -498,6 +502,7 @@ inline bool AASS::vodigrex::LineFollower::testNewBranchNotBlackandMoveForward()
 	int min_row = 0;
 	int max_col = 0;
 	int min_col = 0;
+
 	if( _LP.y > _RP.y){
 		max_row = _LP.y;
 		min_row = _RP.y;
@@ -551,6 +556,19 @@ inline bool AASS::vodigrex::LineFollower::testNewBranchNotBlackandMoveForward()
 	//Define new window
 	//Rect got everything inversed. It needs a point with first dim as col and second as row
 	_W = _map_in(cv::Rect( cv::Point2i(point_min_col , point_min_row ) , cv::Point2i(point_max_col, point_max_row )) );
+	
+	
+// 	cv::Mat print;
+// 	this->_map_in.copyTo(print);
+// 	cv::Size s2;
+// 	cv::Point2i p_dyn_window2;
+// 	_W.locateROI(s2, p_dyn_window2);
+// 	cv::Point2i second_point = p_dyn_window2;
+// 	second_point.x = second_point.x + _W.size().width;
+// 	second_point.y = second_point.y + _W.size().height;
+// 	cv::rectangle( print, p_dyn_window2, second_point, cv::Scalar( 255 ), 1, 4 );
+// 	cv::imshow("tmp", print);
+	
 	
 	//Resize the window to match the line
 	int type = typeOfIntersection(_W);
