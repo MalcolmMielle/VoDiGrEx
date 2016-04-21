@@ -572,6 +572,8 @@ inline bool AASS::vodigrex::LineFollower::testNewBranchNotBlackandMoveForward()
 	
 	//Resize the window to match the line
 	int type = typeOfIntersection(_W);
+	
+// 	std::cout << "TYPE " << type << std::endl;
 	//If we lost the line we upsize W
 	if(type == -1){
 // 		std::cout << "PUTAIN" << std::endl;

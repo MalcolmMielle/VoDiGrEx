@@ -79,21 +79,28 @@ namespace AASS{
 			*/
 			virtual void lineThinningAlgo(Vertex& index_dad);
 			
+			
+			
 			//TODO vertex_out should be consistent
 			void addVertex(const Vertex& vertex_parent, Vertex& vertex_out){
-				cv::Size s;
-				cv::Point2i p_dyn_window;
-				_W.locateROI(s, p_dyn_window);
-				VertexType vtype;
-				vtype.setX(p_dyn_window.x + (_W.size().width/2));
-				vtype.setY(p_dyn_window.y + (_W.size().height/2));
-				
-				EdgeType sed;
-				sed.setLine(_line);
-				_line.clear();
-				
-				_graph.addVertex(vertex_out, vertex_parent, vtype, sed);
-							
+				if(_line.size() > 0){
+					std::cout << "Add vertex" << std::endl;
+					cv::Size s;
+					cv::Point2i p_dyn_window;
+					_W.locateROI(s, p_dyn_window);
+					VertexType vtype;
+					vtype.setX(p_dyn_window.x + (_W.size().width/2));
+					vtype.setY(p_dyn_window.y + (_W.size().height/2));
+					
+					EdgeType sed;
+					sed.setLine(_line);
+					_line.clear();
+					
+					_graph.addVertex(vertex_out, vertex_parent, vtype, sed);
+				}
+				else{
+					vertex_out = vertex_parent;
+				}
 			}
 			
 			void addVertex(Vertex& vertex_out){

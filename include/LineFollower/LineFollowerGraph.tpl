@@ -70,14 +70,13 @@ void LineFollowerGraph<VertexType, EdgeType>::lineThinningAlgo(Vertex& index_dad
 // 		second_point.y = second_point.y + _W.size().height;
 // 		cv::rectangle( print, p_dyn_window, second_point, cv::Scalar( 255 ), 1, 4 );
 // 		cv::imshow("tmp", print);
-// 		cv::waitKey(10);
+// 		cv::waitKey(1);
 // #endif
 
 		//Intersection or dead end
 		if( all_point.size() > 2 || non_dead_end == false){
-			
-			//USE : _all_crossings
 			Vertex new_dad;
+			//I used just a certain number of move but it should use the number of move + the distance travelled by the edge for more robustness. To avoid useless self loops, the number of move needs to be above a certain threshold. Thanks to nature of the algorithm and the moveForward function, it _should_ be ok, by just considering that the bounding box needs to do at all least one jump forward.
 			bool already_exist = loopDetection(new_p, new_dad);
 
 			//New intersection
@@ -87,18 +86,19 @@ void LineFollowerGraph<VertexType, EdgeType>::lineThinningAlgo(Vertex& index_dad
 			//Not a new intersection but still an intersection
 			else{
 				//Should be allowed to have self loop since it's a pseudo graph
-// 				if(new_dad != dad_vertex){
+				//I used just a certain number of move but it should use the number of move + the distance travelled by the edge for more robustness. To avoid useless self loops, the number of move needs to be above a certain threshold. Thanks to nature of the algorithm and the moveForward function, it _should_ be ok, by just considering that the bounding box needs to do at all least one jump forward.
+				if(_line.size() > 1){
 					typename bettergraph::PseudoGraph<VertexType, EdgeType>::Edge ed;
 					EdgeType sed;
 					sed.setLine(_line);
-					_line.clear();
 					_graph.addEdge(ed, new_dad, dad_vertex, sed);
-// 				}
+				}
+// 				std::cout << "Clear" << std::endl;
+				_line.clear();
 			}
 			
 			addPoint2Explore(all_point, new_dad);
 			getNewBranch(dad_vertex);
-// 			LineFollower::moveForward(false);
 			
 // #ifdef DEBUG
 // 		cv::Mat print;
@@ -117,7 +117,7 @@ void LineFollowerGraph<VertexType, EdgeType>::lineThinningAlgo(Vertex& index_dad
 // 		maa_3.setTo(cv::Scalar(0));
 // 		AASS::vodigrex::draw<VertexType, EdgeType>(graph, maa_3);
 // 		cv::imshow("tmp graph", maa_3);
-// 		
+		
 // 		cv::waitKey(0);
 // #endif
 					
@@ -130,14 +130,16 @@ void LineFollowerGraph<VertexType, EdgeType>::lineThinningAlgo(Vertex& index_dad
 			bool already_seen = loopDetection(new_p, loop_vertex);
 			
 			if(already_seen == true){
-				if(loop_vertex != dad_vertex){
+				//not zero because after switching branch we always move forward
+				if(/*loop_vertex != dad_vertex*/ _line.size() > 1 ){
 					typename bettergraph::PseudoGraph<VertexType, EdgeType>::Edge ed;
 					EdgeType sed;
 					sed.setLine(_line);
-					_line.clear();
 					_graph.addEdge(ed, loop_vertex, dad_vertex, sed);
-					dad_vertex = loop_vertex;
 				}
+// 				std::cout << "clear " << std::endl;
+				_line.clear();
+				dad_vertex = loop_vertex;
 			}
 			
 			_LP = all_point[0];
@@ -151,7 +153,7 @@ template<typename VertexType, typename EdgeType>
 void LineFollowerGraph<VertexType, EdgeType>::getNewBranch(Vertex& parent)
 {
 	
-	std::cout << "get new branch siz eof line should be zero" << _line.size() << std::endl;
+// 	std::cout << "get new branch siz eof line should be zero" << _line.size() << std::endl;
 	if(_dad_vertex.size() > 0){
 		parent = _dad_vertex.at(0);
 		_dad_vertex.pop_front();
@@ -232,14 +234,15 @@ bool LineFollowerGraph<VertexType, EdgeType>::loopDetection(cv::Point2i new_p, t
 // 			std::cout << "LOOP DETECTION YES" << std::endl;
 			return true;
 		}
-		if( ( (_LRP_to_explore[i].first.x + _LRP_to_explore[i].second.x) /2 ) <= new_p.x + _marge &&
-			( (_LRP_to_explore[i].first.x + _LRP_to_explore[i].second.x) /2 ) >= new_p.x - _marge &&
-			( (_LRP_to_explore[i].first.y + _LRP_to_explore[i].second.y) /2 ) <= new_p.y + _marge &&
-			( (_LRP_to_explore[i].first.y + _LRP_to_explore[i].second.y) /2 ) >= new_p.y - _marge){
+		
+		//Not marge but inside bounding box _W
+		if( ( (_LRP_to_explore[i].first.x + _LRP_to_explore[i].second.x) /2 ) <= new_p.x + (_W.cols / 2) &&
+			( (_LRP_to_explore[i].first.x + _LRP_to_explore[i].second.x) /2 ) >= new_p.x - (_W.cols / 2) &&
+			( (_LRP_to_explore[i].first.y + _LRP_to_explore[i].second.y) /2 ) <= new_p.y + (_W.rows / 2) &&
+			( (_LRP_to_explore[i].first.y + _LRP_to_explore[i].second.y) /2 ) >= new_p.y - (_W.rows / 2)){
 			dad_vertex = _dad_vertex[i];
 		
 // 			std::cout << "LOOP DETECTION YES WEIRD" << std::endl;
-			
 			return true;
 		}
 	}
