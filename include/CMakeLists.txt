@@ -1,4 +1,4 @@
 
-add_subdirectory(VoronoiDiagram)
-add_subdirectory(LineFollower)
-add_subdirectory(Utils)
+add_subdirectory(voronoidiagram)
+add_subdirectory(linefollower)
+add_subdirectory(utils)

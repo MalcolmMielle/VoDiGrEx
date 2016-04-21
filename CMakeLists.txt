@@ -22,17 +22,17 @@ if ( NOT Boost_FOUND )
 endif()
 
 include_directories("${PROJECT_BINARY_DIR}" ${CMAKE_CURRENT_BINARY_DIR}  
-	include include/VoronoiDiagram/ include/LineFollower/
+	include include/voronoidiagram/ include/linefollower/
 )
 
 add_library(Voronoi 
-			include/VoronoiDiagram/ThinkerVoronoi.cpp		
+			include/voronoidiagram/ThinkerVoronoi.cpp		
 			
 			)
 target_link_libraries(Voronoi ${OpenCV_LIBS})
 
 add_library(LineFollower 
-			include/LineFollower/LineFollower.cpp
+			include/linefollower/LineFollower.cpp
 			)
 target_link_libraries(Voronoi ${OpenCV_LIBS})
 
@@ -82,13 +82,13 @@ add_custom_target(uninstall
 FILE(GLOB files "${CMAKE_CURRENT_SOURCE_DIR}/include/*.hpp")
 INSTALL(FILES ${files} DESTINATION include/vodigrex)
 
-FILE(GLOB files_linef "${CMAKE_CURRENT_SOURCE_DIR}/include/LineFollower/*.hpp" "${CMAKE_CURRENT_SOURCE_DIR}/include/LineFollower/*.tpl")
+FILE(GLOB files_linef "${CMAKE_CURRENT_SOURCE_DIR}/include/linefollower/*.hpp" "${CMAKE_CURRENT_SOURCE_DIR}/include/LineFollower/*.tpl")
 INSTALL(FILES ${files_linef} DESTINATION include/vodigrex/linefollower)
 
-FILE(GLOB files_voro "${CMAKE_CURRENT_SOURCE_DIR}/include/VoronoiDiagram/*.hpp")
+FILE(GLOB files_voro "${CMAKE_CURRENT_SOURCE_DIR}/include/voronoidiagram/*.hpp")
 INSTALL(FILES ${files_voro} DESTINATION include/vodigrex/voronoidiagram)
 
-FILE(GLOB files_utils "${CMAKE_CURRENT_SOURCE_DIR}/include/Utils/*.hpp")
+FILE(GLOB files_utils "${CMAKE_CURRENT_SOURCE_DIR}/include/utils/*.hpp")
 INSTALL(FILES ${files_utils} DESTINATION include/vodigrex/utils)
 
 INSTALL(FILES vodigrex-config.cmake DESTINATION lib/vodigrex)

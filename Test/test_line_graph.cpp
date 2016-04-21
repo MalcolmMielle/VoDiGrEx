@@ -1,6 +1,6 @@
 #include "LineFollowerGraph.hpp"
 #include "ThinkerVoronoi.hpp"
-#include "Utils/Utils.hpp"
+#include "utils/Utils.hpp"
 
 int main(){
 	cv::Mat line = cv::imread("../Test/ObstacleMap.png");

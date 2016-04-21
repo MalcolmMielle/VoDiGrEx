@@ -10,7 +10,7 @@
 #include "LineFollowerDoors.hpp"
 #include "bettergraph/PseudoGraph.hpp"
 #include "SimpleNode.hpp"
-#include "Utils/Utils.hpp"
+#include "utils/Utils.hpp"
 
 
 int main()
