@@ -6,14 +6,14 @@
 // #include "SketchMap.hpp"
 #include "opencv2/imgproc/imgproc.hpp"
 
-#include "vodigrex/Evg_thin/evg-thin.hh"
-#include "vodigrex/Evg_thin/utils.hh"
+#include "Evg_thin/evg-thin.hh"
+#include "Evg_thin/utils.hh"
 
 #include "bettergraph/PseudoGraph.hpp"
-#include "vodigrex/linefollower/SimpleNode.hpp"
+#include "linefollower/SimpleNode.hpp"
 #include "Util.hpp"
 
-#include "vodigrex/voronoidiagram/Thinker.hpp"
+#include "voronoidiagram/Thinker.hpp"
 
 namespace AASS{
 	
