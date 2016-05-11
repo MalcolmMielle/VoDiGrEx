@@ -25,9 +25,13 @@ include_directories("${PROJECT_BINARY_DIR}" ${CMAKE_CURRENT_BINARY_DIR}
 	include include/voronoidiagram/ include/linefollower/
 )
 
+add_library(EVGthin
+			include/Evg_thin/evg-thin.cc
+			)
+
 add_library(Voronoi 
-			include/voronoidiagram/ThinkerVoronoi.cpp		
-			
+			include/voronoidiagram/ThinkerVoronoi.cpp
+			include/voronoidiagram/ThinkerEVG.cpp
 			)
 target_link_libraries(Voronoi ${OpenCV_LIBS})
 
@@ -91,9 +95,13 @@ INSTALL(FILES ${files_voro} DESTINATION include/vodigrex/voronoidiagram)
 FILE(GLOB files_utils "${CMAKE_CURRENT_SOURCE_DIR}/include/utils/*.hpp")
 INSTALL(FILES ${files_utils} DESTINATION include/vodigrex/utils)
 
+FILE(GLOB files_evg "${CMAKE_CURRENT_SOURCE_DIR}/include/Evg_thin/*.hh")
+INSTALL(FILES ${files_evg} DESTINATION include/vodigrex/Evg_thin)
+
 INSTALL(FILES vodigrex-config.cmake DESTINATION lib/vodigrex)
 INSTALL(TARGETS Voronoi DESTINATION lib/vodigrex)
 INSTALL(TARGETS LineFollower DESTINATION lib/vodigrex)
+INSTALL(TARGETS EVGthin DESTINATION lib/vodigrex)
 
 install(TARGETS vodigrex RUNTIME DESTINATION bin)
 install(TARGETS test_line_follower RUNTIME DESTINATION bin)
