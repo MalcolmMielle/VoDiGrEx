@@ -4,7 +4,7 @@
 int main(){
 	
 	
-	cv::Mat line = cv::imread("../Test/ObstacleMap1.png", CV_LOAD_IMAGE_GRAYSCALE);
+	cv::Mat line = cv::imread("../Test/ObstacleMap111.png", CV_LOAD_IMAGE_GRAYSCALE);
 	cv::Mat line_base;
 	line.copyTo(line_base);
 	cv::imshow("base", line);
@@ -22,16 +22,18 @@ int main(){
 	cv::Mat roi_final = result_roi(cv::Rect(0,0,result_roi.size().width-1,result_roi.size().height-1));
 	cv::imshow("Result roi final", roi_final);
 	
-	cv::waitKey(0);
+// 	cv::waitKey(0);
 	
 	cv::Mat line_modified = cv::imread("../Test/ObstacleMap1_modifed.png", CV_LOAD_IMAGE_GRAYSCALE);
 	cv::imshow("base_modified", line_modified);
+// 	cv::waitKey(0);
 	AASS::vodigrex::ThinkerVoronoi thinker_modified;
 	thinker_modified.setLevel(30);
 	thinker_modified.think(line_modified);
-	cv::Mat result_modified_t; thinker_modified.getResult().copyTo(result_modified_t);
+	cv::Mat result_modified_t; 
+	thinker_modified.getResult().copyTo(result_modified_t);
 	cv::imshow("Voronoi_modified", result_modified_t);
-	
+// 	cv::waitKey(0);
 /*	
 	cv::Mat test = cv::Mat::zeros(line.size().width, line.size().height);
 	
@@ -42,15 +44,24 @@ int main(){
 // 	cv::imshow("Voronoi again", result);
 	
 	cv::Mat result =  cv::Scalar::all(255) - result_t;
+// 	cv::waitKey(0);
 	cv::Mat result_modified =  cv::Scalar::all(255) - result_modified_t;
-	
+// 	cv::waitKey(0);
+// 	cv::imshow("bug1", result);
+// 	cv::imshow("bug2", result_modified);
+// 	cv::waitKey(0);
 	diff = result - result_modified;
+// 	cv::waitKey(0);
 	cv::Mat diff2 = result_modified - result;
+// 	cv::waitKey(0);
 	cv::Mat all_diff = diff + diff2;
+// 	cv::waitKey(0);
 	
 	cv::imshow("Diff", diff);
 	cv::imshow("Diff2", diff2);
 	cv::imshow("AllDiff", all_diff);
+	
+	cv::waitKey(0);
 	
 	
 	cv::Mat line_base_inv =  cv::Scalar::all(255) - line_base;
