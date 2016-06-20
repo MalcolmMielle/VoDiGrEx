@@ -38,7 +38,7 @@ namespace AASS{
 			int getMinValueWhite(){return _line_follower.getMinValueWhite();}
 			void setMarge(int m){_line_follower.setMarge(m);}
 			int getMarge(){return _line_follower.getMarge();}
-			
+			size_t size(){return _dgraphlist.size();}
 			/**
 			* @brief thinning algorithm
 			* 
