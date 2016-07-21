@@ -43,7 +43,7 @@ namespace AASS{
 				color[3] = 255; 
 			}
 			//first is beginning, second is "past the end"
-			std::pair<bettergraph::PseudoGraph<AASS::vodigrex::SimpleNode, AASS::vodigrex::SimpleEdge>::VertexIterator, bettergraph::PseudoGraph<AASS::vodigrex::SimpleNode, AASS::vodigrex::SimpleEdge>::VertexIterator> vp;
+			std::pair<typename bettergraph::PseudoGraph<VertexType, EdgeType>::VertexIterator, typename bettergraph::PseudoGraph<VertexType, EdgeType>::VertexIterator> vp;
 			//vertices access all the vertix
 			for (vp = boost::vertices(graph.getGraph()); vp.first != vp.second; ++vp.first) {
 				
@@ -51,15 +51,15 @@ namespace AASS{
 				
 		// 			std::cout << "NEW VERTEX" << std::endl;
 				
-				bettergraph::PseudoGraph<AASS::vodigrex::SimpleNode, AASS::vodigrex::SimpleEdge>::Vertex v = *vp.first;
+				typename bettergraph::PseudoGraph<VertexType, EdgeType>::Vertex v = *vp.first;
 				cv::Point2i pp;
 				pp.x = graph[v].getX();
 				pp.y = graph[v].getY();
 				cv::circle(m, pp, 5, color);
 		// 			cv::circle(tmp, _graph[v].point, 5, color);
 		// 
-				bettergraph::PseudoGraph<AASS::vodigrex::SimpleNode, AASS::vodigrex::SimpleEdge>::EdgeIterator out_i, out_end;
-				bettergraph::PseudoGraph<AASS::vodigrex::SimpleNode, AASS::vodigrex::SimpleEdge>::Edge e;
+				typename bettergraph::PseudoGraph<VertexType, EdgeType>::EdgeIterator out_i, out_end;
+				typename bettergraph::PseudoGraph<VertexType, EdgeType>::Edge e;
 				
 				
 				
@@ -67,18 +67,18 @@ namespace AASS{
 					out_i != out_end; ++out_i) {
 						
 					e = *out_i;
-					bettergraph::PseudoGraph<AASS::vodigrex::SimpleNode, AASS::vodigrex::SimpleEdge>::Vertex targ = boost::target(e, graph);
+					typename bettergraph::PseudoGraph<VertexType, EdgeType>::Vertex targ = boost::target(e, graph);
 				
 					
 // 					if(targ == v){
 						flag_round = true;
-						std::cout << "same vertex" << std::endl;
+// 						std::cout << "same vertex" << std::endl;
 						
 						cv::Point2i pp3;
 						pp3.x = graph[targ].getX();
 						pp3.y = graph[targ].getY();
 // 						cv::circle(m, pp3, 5, color);
-						std::cout << " size " << graph[e].getLine().size() << std::endl;
+// 						std::cout << " size " << graph[e].getLine().size() << std::endl;
 						for(int i = 0 ; i < (int) graph[e].getLine().size() - 1 ; ++i){
 							
 // 							std::cout << i << " size " << graph[e].getLine().size() << std::endl;

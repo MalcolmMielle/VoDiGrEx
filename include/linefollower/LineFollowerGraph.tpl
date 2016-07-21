@@ -1,5 +1,5 @@
 		
-		template<typename VertexType, typename EdgeType>
+template<typename VertexType, typename EdgeType>
 void LineFollowerGraph<VertexType, EdgeType>::thin()
 {
 	try{
