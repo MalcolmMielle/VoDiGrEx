@@ -1,6 +1,10 @@
 #ifndef LINEFOLLOWERGRAPHCORNERS_POINT_MAP_21072016
 #define LINEFOLLOWERGRAPHCORNERS_POINT_MAP_21072016
 
+//TODO : humhum...
+#include "eigen3/Eigen/Core"
+#include "eigen3/Eigen/Dense"
+
 #include "LineFollowerGraph.hpp"
 #include "bettergraph/PseudoGraph.hpp"
 #include "SimpleNode.hpp"
@@ -30,18 +34,28 @@ namespace AASS{
 			float _direction_base[2];
 			//Keypoint used for creating the vector to compare to reference
 			cv::Point2i _key_point;
+			cv::Point2i _middle_point;
 			//Flag to know if we just created a node and we need a new direction
 			bool _direction_init;
+			double _deviation_angle_in_rad;
+			
+			
+			std::deque<cv::Mat> _last_Ws;
+			int _max_distance_bounding_box;
+			
+			
 			
 			
 		public:
-			LineFollowerGraphCorners(){};
-			
+			LineFollowerGraphCorners() : _deviation_angle_in_rad(1.5), _max_distance_bounding_box(10){};
+
+			void setMaxDeviation(double dev){_deviation_angle_in_rad = dev;};
 			
 		protected:
 			void lineThinningAlgo(Vertex& index_dad);
-			bool isCorner(const std::vector<cv::Point2i>& all_point);
-			bool directionChanged();
+			bool isCorner(const std::vector< cv::Point2i >& all_point, cv::Point2f& corner_out);
+			bool directionChanged(cv::Point2f& corner_out);
+			Eigen::Vector3d collisionRay(const Eigen::Vector3d& ray_direction, const Eigen::Vector3d& ray_point, const Eigen::Vector3d& ray_direction_second, const Eigen::Vector3d& ray_point_second);
 		};
 		
 		template<typename VertexType, typename EdgeType>
@@ -63,8 +77,9 @@ namespace AASS{
 				bool non_dead_end = this->findNextLPRP(all_point);
 				
 				bool iscorner = false;
+				cv::Point2f corner_turn(-1, -1);
 				if(all_point.size() == 2){
-					iscorner = isCorner(all_point);
+					iscorner = isCorner(all_point, corner_turn);
 				}
 				
 				cv::Size s;
@@ -97,7 +112,17 @@ namespace AASS{
 
 					//New intersection
 					if(already_exist == false){
-						this->addVertex(dad_vertex, new_dad);
+						if(iscorner == true){
+							assert(corner_turn.x != -1);
+							assert(corner_turn.y != -1);
+							this->addVertex(dad_vertex, new_dad, corner_turn);
+							_last_Ws.clear();
+							
+						}
+						else{
+							this->addVertex(dad_vertex, new_dad);
+							_last_Ws.clear();
+						}
 					}
 					//Not a new intersection but still an intersection
 					else{
@@ -173,7 +198,7 @@ namespace AASS{
 		}
 		
 		template<typename VertexType, typename EdgeType>
-		inline bool LineFollowerGraphCorners<VertexType, EdgeType>::isCorner(const std::vector< cv::Point2i >& all_point)
+		inline bool LineFollowerGraphCorners<VertexType, EdgeType>::isCorner(const std::vector< cv::Point2i >& all_point, cv::Point2f& corner_out)
 		{
 			
 			cv::Point2i p;
@@ -210,112 +235,234 @@ namespace AASS{
 // 			return false;
 			
 			
-			bool changed = directionChanged();
-			if(changed == true){
-				return true;
-			}
-
+			return directionChanged(corner_out);
 		}
 	
 	
 		template<typename VertexType, typename EdgeType>
-		inline bool LineFollowerGraphCorners<VertexType, EdgeType>::directionChanged(){
+		inline bool LineFollowerGraphCorners<VertexType, EdgeType>::directionChanged(cv::Point2f& corner_out){
+			_last_Ws.push_back(this->_W);
 			
-			cv::Point2i p;
-			cv::Size s;
-			this->_W.locateROI(s, p);
-			double firsty = (p.x - _key_point.x)*(p.x - _key_point.x);
-			double secondy = (p.y - _key_point.y)*(p.y - _key_point.y);
-// 			std::cout << "fand s : " <<firsty << " and " << secondy << std::endl;
-			int distance = std::sqrt(firsty + secondy);
-			
-// 			std::cout << " distance " << distance <<std::endl;
-// 			std::cout <<" Center< : " << p << " keypoint" << _key_point << std::endl;
-			
-			//If it needs to be initialized
-			if(distance > 5 && _direction_init == true){
-// 				std::cout << " INIT" << std::endl;
-				_direction_base[0] = p.x - _key_point.x;
-				_direction_base[1] = p.y - _key_point.y;
-				_direction_init = false;
-// // 				std::cout <<" Center< : " << p << " keypoint" << _key_point << " points " << _direction_base[0] << ":" << _direction_base[1] << " distance " << distance <<std::endl;
-// 				int a;
-// 				std::cin >> a;
-			}
-			//Not too short;
-			if(distance > 5){
+			if(_last_Ws.size() > _max_distance_bounding_box){
 				
+				_last_Ws.pop_front();
 				
-// 				cv::Mat print;
-// 				this->_map_in.copyTo(print);
-// 				cv::Size s2;
-// 				cv::Point2i p_dyn_window2;
-// 				this->_W.locateROI(s2, p_dyn_window2);
-// 				cv::Point2i second_point = p_dyn_window2;
-// 				second_point.x = second_point.x + this->_W.size().width;
-// 				second_point.y = second_point.y + this->_W.size().height;
-// 				cv::rectangle( print, p_dyn_window2, second_point, cv::Scalar( 255 ), 1, 4 );
-// 				cv::circle(print, _key_point, 5, cv::Scalar(200), 3);
-// 				cv::Point2i tmp;
-// 				
-// 				cv::circle(print, p, 5, cv::Scalar(255), 3);
-// 				cv::imshow("tmp", print);
-// 				
-// 				bettergraph::PseudoGraph<VertexType, EdgeType> graph = this->getGraph();
-// 				cv::Mat maa_3 = this->_map_in.clone();
-// 				maa_3.setTo(cv::Scalar(0));
-// 				AASS::vodigrex::draw<VertexType, EdgeType>(graph, maa_3);
-// 				cv::imshow("tmp CORNER", maa_3);
-// 				
-// 				cv::waitKey(0);
+				//Localise 3 bounding boxes
 				
+				cv::Point2i p;
+				cv::Size s;
+				this->_W.locateROI(s, p);
 				
-// 				cv::imshow("Dyn", this->_W);
-// 				cv::waitKey(0);
+				cv::Point2i p_end;
+				cv::Size s_end;
+				_last_Ws[0].locateROI(s_end, p_end);
 				
-				//Current vector
-				float b[2] = {p.x - _key_point.x, p.y - _key_point.y};
+				cv::Point2i p_middle;
+				cv::Size s_middle;
+				_last_Ws[(_last_Ws.size()/2) - 1].locateROI(s_middle, p_middle);
+				
+				float first_direction[2]; 
+				first_direction[0] = p_middle.x - p_end.x; 
+				first_direction[1] = p_middle.y - p_end.y;
+				
+				float second_direction[2]; 
+				second_direction[0] = p.x - p_middle.x;
+				second_direction[1] = p.y - p_middle.y;
+				
+				float direction_norm = std::sqrt( ( first_direction[0] * first_direction[0] ) + ( first_direction[1] * first_direction[1]) );
+				
 				//Reference vector
-				float direction_norm = std::sqrt(_direction_base[0]*_direction_base[0] + _direction_base[1]*_direction_base[1]);
-				float b_norm = std::sqrt(b[0]*b[0] + b[1]*b[1]);
+				float second_direction_norm = std::sqrt( ( second_direction[0] * second_direction[0] ) + ( second_direction[1] * second_direction[1] ) );
 
-				cv::Mat AA(1,2,CV_32FC1,_direction_base);
-				cv::Mat BB(1,2,CV_32FC1,b);
+				cv::Mat AA(1, 2, CV_32FC1, first_direction);
+				cv::Mat BB(1, 2, CV_32FC1, second_direction);
 				
 				double d = AA.dot(BB);
-				double l = direction_norm * b_norm;			
+				double l = direction_norm * second_direction_norm;			
 				
 // 				std::cout <<" Center : " << p << " points " <<this->_LP << " " << all_point[0] << " Size " << this->_W.size()  <<std::endl;
-
 // 				std::cout <<" Center : " << p << " points " << _direction_base[0] << ":" << _direction_base[1] << " " << b[0] << ":" << b[1] << " distance " << distance <<std::endl;
 // 				std::cout << "Norms a b " << direction_norm << " " << b_norm << std::endl;
 // 				std::cout << " d : " << d << " norm " << l << std::endl;
 				double ac = d/l;
 				//Angle between reference direction and old direction
 				ac = std::acos(ac);
-// 				std::cout << "Angle : "<< ac << " conmpare to " << (M_PI  / 2) << std::endl;
 				
-				//If to long distance: update the keypoint so the vector we compare grow forward
-				if(distance > 20){
-// 					_direction_base[0] = {p.x - _direction_base[0], p.y - _direction_base[1]};
-// 					_direction_base[1] = {p.x - _direction_base[0], p.y - _direction_base[1]};
-					_key_point = p;
-// 					std::cout <<" New keypoint : " << p << " keypoint" << _key_point <<std::endl;
-// 					int a;
-// 					std::cin >> a;
-				}
 				
-				if(ac >= 0.5/* && ac < (M_PI  / 2) + 0.1*/){
+				
+				if(ac <= (M_PI  / 2) + 0.25 && ac > (M_PI  / 2) - 0.25){
+					std::cout << "ac " << ac << "\n" ;
+					std::cout << ac << " >= " << (M_PI  / 2) + 0.2 << " && " << ac << " < " << (M_PI  / 2) - 0.2 << std::endl;
 // 					int a;
 // 					std::cin >> a;
 // 					std::cout << "Return true" << std::endl;
+					
+// 					Eigen::Vector3d ray_direction; ray_direction << _direction_base[0], _direction_base[1], 0;
+// 					Eigen::Vector3d ray_point; ray_point << _key_point.x, _key_point.y, 0;
+// 					Eigen::Vector3d ray_direction_second; ray_direction_second << ;
+// 					Eigen::Vector3d ray_point_second; ray_point_second << ;
+					
+					corner_out = p_middle;
 					return true;
+					
+					
+					
 				}
+				
 				return false;
-				}
+				
+			}
+			
+			
+			
+			
+// 			cv::Point2i p;
+// 			cv::Size s;
+// 			this->_W.locateROI(s, p);
+// 			double firsty = (p.x - _key_point.x)*(p.x - _key_point.x);
+// 			double secondy = (p.y - _key_point.y)*(p.y - _key_point.y);
+// // 			std::cout << "fand s : " <<firsty << " and " << secondy << std::endl;
+// 			int distance = std::sqrt(firsty + secondy);
+// 			
+// // 			std::cout << " distance " << distance <<std::endl;
+// // 			std::cout <<" Center< : " << p << " keypoint" << _key_point << std::endl;
+// 			
+// 			//If it needs to be initialized
+// 			if(distance > 5 && _direction_init == true){
+// // 				std::cout << " INIT" << std::endl;
+// 				_direction_base[0] = p.x - _key_point.x;
+// 				_direction_base[1] = p.y - _key_point.y;
+// 				_direction_init = false;
+// // // 				std::cout <<" Center< : " << p << " keypoint" << _key_point << " points " << _direction_base[0] << ":" << _direction_base[1] << " distance " << distance <<std::endl;
+// // 				int a;
+// // 				std::cin >> a;
+// 			}
+// 			//Not too short;
+// 			if(distance > 5){
+// 				
+// 				
+// // 				cv::Mat print;
+// // 				this->_map_in.copyTo(print);
+// // 				cv::Size s2;
+// // 				cv::Point2i p_dyn_window2;
+// // 				this->_W.locateROI(s2, p_dyn_window2);
+// // 				cv::Point2i second_point = p_dyn_window2;
+// // 				second_point.x = second_point.x + this->_W.size().width;
+// // 				second_point.y = second_point.y + this->_W.size().height;
+// // 				cv::rectangle( print, p_dyn_window2, second_point, cv::Scalar( 255 ), 1, 4 );
+// // 				cv::circle(print, _key_point, 5, cv::Scalar(200), 3);
+// // 				cv::Point2i tmp;
+// // 				
+// // 				cv::circle(print, p, 5, cv::Scalar(255), 3);
+// // 				cv::imshow("tmp", print);
+// // 				
+// // 				bettergraph::PseudoGraph<VertexType, EdgeType> graph = this->getGraph();
+// // 				cv::Mat maa_3 = this->_map_in.clone();
+// // 				maa_3.setTo(cv::Scalar(0));
+// // 				AASS::vodigrex::draw<VertexType, EdgeType>(graph, maa_3);
+// // 				cv::imshow("tmp CORNER", maa_3);
+// // 				
+// // 				cv::waitKey(0);
+// 				
+// 				
+// // 				cv::imshow("Dyn", this->_W);
+// // 				cv::waitKey(0);
+// 				
+// 				//Current vector
+// 				float b[2] = {p.x - _key_point.x, p.y - _key_point.y};
+// 				//Reference vector
+// 				float direction_norm = std::sqrt(_direction_base[0]*_direction_base[0] + _direction_base[1]*_direction_base[1]);
+// 				float b_norm = std::sqrt(b[0]*b[0] + b[1]*b[1]);
+// 
+// 				cv::Mat AA(1,2,CV_32FC1,_direction_base);
+// 				cv::Mat BB(1,2,CV_32FC1,b);
+// 				
+// 				double d = AA.dot(BB);
+// 				double l = direction_norm * b_norm;			
+// 				
+// // 				std::cout <<" Center : " << p << " points " <<this->_LP << " " << all_point[0] << " Size " << this->_W.size()  <<std::endl;
+// 
+// // 				std::cout <<" Center : " << p << " points " << _direction_base[0] << ":" << _direction_base[1] << " " << b[0] << ":" << b[1] << " distance " << distance <<std::endl;
+// // 				std::cout << "Norms a b " << direction_norm << " " << b_norm << std::endl;
+// // 				std::cout << " d : " << d << " norm " << l << std::endl;
+// 				double ac = d/l;
+// 				//Angle between reference direction and old direction
+// 				ac = std::acos(ac);
+// // 				std::cout << "Angle : "<< ac << " conmpare to " << (M_PI  / 2) << std::endl;
+// 				
+// 				//If to long distance: update the keypoint so the vector we compare grow forward
+// 				if(distance > 20){
+// 					_direction_base[0] = p.x - _key_point.x;
+// 					_direction_base[1] = p.y - _key_point.y;
+// 					_key_point = p;
+// // 					std::cout <<" New keypoint : " << p << " keypoint" << _key_point <<std::endl;
+// // 					int a;
+// // 					std::cin >> a;
+// 				}
+// 				
+// 				if(ac >= _deviation_angle_in_rad/* && ac < (M_PI  / 2) + 0.1*/){
+// // 					int a;
+// // 					std::cin >> a;
+// // 					std::cout << "Return true" << std::endl;
+// 					
+// 					Eigen::Vector3d ray_direction; ray_direction << _direction_base[0], _direction_base[1], 0;
+// 					Eigen::Vector3d ray_point; ray_point << _key_point.x, _key_point.y, 0;
+// 					Eigen::Vector3d ray_direction_second; ray_direction_second << ;
+// 					Eigen::Vector3d ray_point_second; ray_point_second << ;
+// 					
+// 					return true;
+// 				}
+// 				return false;
+// 				}
+
+
 			return false;
 
 		}
+		
+		template<typename VertexType, typename EdgeType>
+		inline Eigen::Vector3d LineFollowerGraphCorners<VertexType, EdgeType>::collisionRay(
+			const Eigen::Vector3d& ray_direction, 
+			const Eigen::Vector3d& ray_point, 
+			const Eigen::Vector3d& ray_direction_second, 
+			const Eigen::Vector3d& ray_point_second){
+			
+			Eigen::Matrix3d A ;//THree rows and 2 cols ;
+			Eigen::Vector3d b;
+			
+			A << - ray_direction(0), ray_direction_second(0), 0,
+				- ray_direction(1), ray_direction_second(1), 0,
+				- ray_direction(2), ray_direction_second(2), 0;
+			b << ray_point(0) - ray_point_second(0),
+				ray_point(1) - ray_point_second(1),
+				ray_point(2) - ray_point_second(2);
+				
+// 			std::cout << "Here is the matrix A:\n" << A << std::endl;
+// 			std::cout << "Here is the vector b:\n" << b << std::endl;
+			Eigen::Vector3d t_n = A.colPivHouseholderQr().solve(b);
+// 			std::cout << "The solution is:\n" << t_n << std::endl;
+			
+			//Calculate collision point using running parameter t_n
+			Eigen::Vector3d x;
+			x << std::floor( (( ray_direction(0) * t_n(0) ) + ray_point(0) ) * 10 + 0.5)/10,
+				 std::floor( (( ray_direction(1) * t_n(0) ) + ray_point(1) ) * 10 + 0.5)/10,
+				 std::floor( (( ray_direction(2) * t_n(0) ) + ray_point(2) ) * 10 + 0.5)/10;
+				 
+			Eigen::Vector3d x_second;
+			x_second << std::floor( (( ray_direction_second(0) * t_n(1) ) + ray_point_second(0)) * 10 + 0.5)/10,
+						std::floor( (( ray_direction_second(1) * t_n(1) ) + ray_point_second(1)) * 10 + 0.5)/10,
+						std::floor( (( ray_direction_second(2) * t_n(1) ) + ray_point_second(2)) * 10 + 0.5)/10;
+				 
+// 			std::cout << x << " and " << x_second << std::endl;
+			
+			//TODO: Make this test better :S
+// 			assert(x == x_second);
+				 
+			return x;
+			
+		}
+		
+		
 	}
 }
 

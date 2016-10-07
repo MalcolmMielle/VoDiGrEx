@@ -5,7 +5,8 @@
 #include "utils/Utils.hpp"
 
 int main(){
-	cv::Mat line = cv::imread("../Test/ObstacleMap111.png");
+	cv::Mat line = cv::imread("../Test/emergbasement_complete.png");
+// 	cv::Mat line = cv::imread("../Test/corner.png");
 	AASS::vodigrex::MultipleLineFollowerBase<
 		AASS::vodigrex::SimpleNode, 
 		AASS::vodigrex::SimpleEdge, 

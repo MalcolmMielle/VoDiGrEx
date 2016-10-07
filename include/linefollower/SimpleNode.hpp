@@ -19,14 +19,14 @@ namespace AASS{
 		class SimpleNode{
 			
 		public :
-			int x;
-			int y;
+			float x;
+			float y;
 			SimpleNode(){};
-			int getX() const {return x;}
-			int getY() const {return y;}
-			void setX(int xx){ x = xx;}
-			void setY(int yy){ y = yy;}
-			void setPoint(int xx, int yy){ x = xx; y = yy;}
+			float getX() const {return x;}
+			float getY() const {return y;}
+			void setX(float xx){ x = xx;}
+			void setY(float yy){ y = yy;}
+			void setPoint(float xx, float yy){ x = xx; y = yy;}
 		};
 
 		class SimpleEdge{

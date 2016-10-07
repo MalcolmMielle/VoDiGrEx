@@ -30,7 +30,7 @@ namespace AASS{
 		template<typename VertexType, typename EdgeType>	
 		inline void draw(const typename bettergraph::PseudoGraph<VertexType, EdgeType> graph, cv::Mat& m)
 		{
-			bool flag_round = false;
+// 			bool flag_round = false;
 			std::cout << "DRAW" << std::endl;
 			
 			cv::Scalar color;
@@ -71,7 +71,7 @@ namespace AASS{
 				
 					
 // 					if(targ == v){
-						flag_round = true;
+// 						flag_round = true;
 // 						std::cout << "same vertex" << std::endl;
 						
 						cv::Point2i pp3;

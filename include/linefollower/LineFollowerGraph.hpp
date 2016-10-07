@@ -82,12 +82,17 @@ namespace AASS{
 			
 			
 			//TODO vertex_out should be consistent
-			void addVertex(const Vertex& vertex_parent, Vertex& vertex_out){
+			void addVertex(const Vertex& vertex_parent, Vertex& vertex_out, cv::Point2i point = cv::Point2i(-1, -1)){
 				if(_line.size() > 0){
 					std::cout << "Add vertex" << std::endl;
 					cv::Size s;
 					cv::Point2i p_dyn_window;
-					_W.locateROI(s, p_dyn_window);
+					if(point.x == -1 && point.y == -1){
+						_W.locateROI(s, p_dyn_window);
+					}
+					else{
+						p_dyn_window = point;
+					}
 					VertexType vtype;
 					vtype.setX(p_dyn_window.x + (_W.size().width/2));
 					vtype.setY(p_dyn_window.y + (_W.size().height/2));
@@ -103,10 +108,15 @@ namespace AASS{
 				}
 			}
 			
-			void addVertex(Vertex& vertex_out){
+			void addVertex(Vertex& vertex_out, cv::Point2i point = cv::Point2i(-1, -1)){
 				cv::Size s;
 				cv::Point2i p_dyn_window;
-				_W.locateROI(s, p_dyn_window);
+				if(point.x == -1 && point.y == -1){
+					_W.locateROI(s, p_dyn_window);
+				}
+				else{
+					p_dyn_window = point;
+				}
 				VertexType vtype;
 				vtype.setX(p_dyn_window.x + (_W.size().width/2));
 				vtype.setY(p_dyn_window.y + (_W.size().height/2));

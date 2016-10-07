@@ -4,6 +4,9 @@
 cmake_minimum_required(VERSION 2.6)
 project(vodigrex)
 
+
+# add_definitions(-std=c++11)
+
 SET(CMAKE_CXX_FLAGS "-Wall")
 
 # Version for all the file in debug have TIMED defined in debug mode
@@ -12,6 +15,10 @@ SET(CMAKE_CXX_FLAGS_DEBUG  "-DDEBUG -g")
 # target_compile_definitions(Probabilitieslib PUBLIC $<$<CONFIG:Debug>:TIMED>)
 
 find_package( OpenCV REQUIRED)
+
+find_package(Eigen3 REQUIRED)
+include_directories(${EIGEN_INCLUDE_DIRS})
+add_definitions(${EIGEN_DEFINITIONS})
 
 find_package( bettergraph REQUIRED)
 
