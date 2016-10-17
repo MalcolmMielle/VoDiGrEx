@@ -20,15 +20,23 @@ void LineFollowerGraph<VertexType, EdgeType>::thin()
 		
 		Vertex dad;
 		
+		//TODO : attention this is dirty
+		
 		cv::Mat m = _W.clone();
 		//Is a dead end
 		if(all_point.size() == 2){
+//		std::cout << "Adding first vert" << std::endl;
 			addVertex(dad);
+		_all_time_dad_vertex.push_back(dad);
+		_all_time_LRP_to_explore.push_back(std::pair<cv::Point2i, cv::Point2i>(_LP, _RP));
 			lineThinningAlgo(dad);
 		}
 		//Line
 		else{
+//		std::cout << "Adding first vert nopppe" << std::endl;
 			addVertex(dad);
+		_all_time_dad_vertex.push_back(dad);
+		_all_time_LRP_to_explore.push_back(std::pair<cv::Point2i, cv::Point2i>(_LP, _RP));
 			addPoint2Explore(all_point, dad);
 			lineThinningAlgo(dad);					
 		}
@@ -195,8 +203,13 @@ void LineFollowerGraph<VertexType, EdgeType>::addPoint2Explore(const std::vector
 		//dad_index++;
 		for(size_t i = 0 ; i < all_points.size() ; i=i+2){
 // 			std::cout << "One push" << std::endl;
+			
 			_LRP_to_explore.push_back(std::pair<cv::Point2i, cv::Point2i>(all_points[i], all_points[i+1]));
+			_all_time_LRP_to_explore.push_back(std::pair<cv::Point2i, cv::Point2i>(all_points[i], all_points[i+1]));
+			
 			_dad_vertex.push_back(loop);
+			_all_time_dad_vertex.push_back(loop);
+			
 			_last_drawing_point_deque.push_back(_last_drawing_point);
 			
 		}
@@ -213,6 +226,9 @@ void LineFollowerGraph<VertexType, EdgeType>::clear()
 	_dad_vertex.clear();
 	_line.clear();
 	LineFollower::clear();
+	
+	_all_time_dad_vertex.clear();
+	_all_time_LRP_to_explore.clear();
 }
 
 //To slow
@@ -222,25 +238,25 @@ template<typename VertexType, typename EdgeType>
 bool LineFollowerGraph<VertexType, EdgeType>::loopDetection(cv::Point2i new_p, typename AASS::vodigrex::LineFollowerGraph<VertexType, EdgeType>::Vertex& dad_vertex)
 {
 	
-// 	std::cout << "Total size " << _dad_vertex.size() << std::endl;
-	for(size_t i = 0 ; i < _dad_vertex.size(); ++i){
-// 		std::cout << "pb :S ? " << _dad_vertex.size() << std::endl;
-		if(_graph[_dad_vertex[i]].getX() <= new_p.x + _marge &&
-			_graph[_dad_vertex[i]].getX() >= new_p.x - _marge &&
-			_graph[_dad_vertex[i]].getY() <= new_p.y + _marge &&
-			_graph[_dad_vertex[i]].getY() >= new_p.y - _marge){
-			dad_vertex = _dad_vertex[i];
+// 	std::cout << "Total size " << _all_time_dad_vertex.size() << std::endl;
+	for(size_t i = 0 ; i < _all_time_dad_vertex.size(); ++i){
+// 		std::cout << "pb :S ? " << i << " " << _dad_vertex.size() << " " << _graph[_all_time_dad_vertex[i]].getX() << " " << _graph[_all_time_dad_vertex[i]].getY() << " VS " << new_p << std::endl;
+		if(_graph[_all_time_dad_vertex[i]].getX() <= new_p.x + _marge &&
+			_graph[_all_time_dad_vertex[i]].getX() >= new_p.x - _marge &&
+			_graph[_all_time_dad_vertex[i]].getY() <= new_p.y + _marge &&
+			_graph[_all_time_dad_vertex[i]].getY() >= new_p.y - _marge){
+			dad_vertex = _all_time_dad_vertex[i];
 		
 // 			std::cout << "LOOP DETECTION YES" << std::endl;
 			return true;
 		}
 		
 		//Not marge but inside bounding box _W
-		if( ( (_LRP_to_explore[i].first.x + _LRP_to_explore[i].second.x) /2 ) <= new_p.x + (_W.cols / 2) &&
-			( (_LRP_to_explore[i].first.x + _LRP_to_explore[i].second.x) /2 ) >= new_p.x - (_W.cols / 2) &&
-			( (_LRP_to_explore[i].first.y + _LRP_to_explore[i].second.y) /2 ) <= new_p.y + (_W.rows / 2) &&
-			( (_LRP_to_explore[i].first.y + _LRP_to_explore[i].second.y) /2 ) >= new_p.y - (_W.rows / 2)){
-			dad_vertex = _dad_vertex[i];
+		if( ( (_all_time_LRP_to_explore[i].first.x + _all_time_LRP_to_explore[i].second.x) /2 ) <= new_p.x + (_W.cols / 2) &&
+			( (_all_time_LRP_to_explore[i].first.x + _all_time_LRP_to_explore[i].second.x) /2 ) >= new_p.x - (_W.cols / 2) &&
+			( (_all_time_LRP_to_explore[i].first.y + _all_time_LRP_to_explore[i].second.y) /2 ) <= new_p.y + (_W.rows / 2) &&
+			( (_all_time_LRP_to_explore[i].first.y + _all_time_LRP_to_explore[i].second.y) /2 ) >= new_p.y - (_W.rows / 2)){
+			dad_vertex = _all_time_dad_vertex[i];
 		
 // 			std::cout << "LOOP DETECTION YES WEIRD" << std::endl;
 			return true;

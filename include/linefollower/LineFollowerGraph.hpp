@@ -27,12 +27,17 @@ namespace AASS{
 			
 			/// @brief deque of all parent vertex with line to explore. The same vertex is inputted here as much time as it has exit branches
 			std::deque< Vertex > _dad_vertex;
+			/// @brief deque of all parent vertex with line to explore. The same vertex is inputted here as much time as it has exit branches
+			std::deque< Vertex > _all_time_dad_vertex;
 			/// @brief Final graph
 			bettergraph::PseudoGraph<VertexType, EdgeType> _graph;
 			/// @brief Every two point closer than _marge are to be fused as one.
 			int _marge;
 			/// @brief Edge points
 			std::vector< std::pair<int, int> > _line;
+			
+			/// @brief ALL Double point Lp and RP
+			std::deque<std::pair< cv::Point2i, cv::Point2i > > _all_time_LRP_to_explore; 
 			
 			
 		public:
@@ -84,10 +89,11 @@ namespace AASS{
 			//TODO vertex_out should be consistent
 			void addVertex(const Vertex& vertex_parent, Vertex& vertex_out, cv::Point2i point = cv::Point2i(-1, -1)){
 				if(_line.size() > 0){
-					std::cout << "Add vertex" << std::endl;
+// 					std::cout << "Add vertex" << std::endl;
 					cv::Size s;
 					cv::Point2i p_dyn_window;
 					if(point.x == -1 && point.y == -1){
+// 						std::cout << "Locate ROI" << std::endl;
 						_W.locateROI(s, p_dyn_window);
 					}
 					else{
@@ -96,6 +102,9 @@ namespace AASS{
 					VertexType vtype;
 					vtype.setX(p_dyn_window.x + (_W.size().width/2));
 					vtype.setY(p_dyn_window.y + (_W.size().height/2));
+					
+					
+// 					std::cout << "Found point: " << vtype.x << " " <<vtype.y << std::endl;
 					
 					EdgeType sed;
 					sed.setLine(_line);
@@ -109,6 +118,7 @@ namespace AASS{
 			}
 			
 			void addVertex(Vertex& vertex_out, cv::Point2i point = cv::Point2i(-1, -1)){
+// 				std::cout << "Add vertex other" << std::endl;
 				cv::Size s;
 				cv::Point2i p_dyn_window;
 				if(point.x == -1 && point.y == -1){
@@ -120,6 +130,9 @@ namespace AASS{
 				VertexType vtype;
 				vtype.setX(p_dyn_window.x + (_W.size().width/2));
 				vtype.setY(p_dyn_window.y + (_W.size().height/2));
+				
+// 				std::cout << "Found point: " << vtype.x << " " <<vtype.y << std::endl;
+				
 				_graph.addVertex(vertex_out, vtype);
 			}
 			

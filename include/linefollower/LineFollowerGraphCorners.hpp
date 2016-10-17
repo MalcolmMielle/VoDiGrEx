@@ -56,7 +56,57 @@ namespace AASS{
 			bool isCorner(const std::vector< cv::Point2i >& all_point, cv::Point2f& corner_out);
 			bool directionChanged(cv::Point2f& corner_out);
 			Eigen::Vector3d collisionRay(const Eigen::Vector3d& ray_direction, const Eigen::Vector3d& ray_point, const Eigen::Vector3d& ray_direction_second, const Eigen::Vector3d& ray_point_second);
+			
+			
+			
+			bool testNoDuplicate(){
+		
+// 				std::cout << this->_all_time_dad_vertex.size() << "==" << this->_graph.getNumVertices() << std::endl;
+				
+// 				assert(this->_all_time_dad_vertex.size() == this->_graph.getNumVertices());
+				
+				std::pair< 
+					typename bettergraph::PseudoGraph<VertexType, EdgeType>::VertexIterator, 
+					typename bettergraph::PseudoGraph<VertexType, EdgeType>::VertexIterator 
+				> vp;
+				for (vp = boost::vertices(this->_graph); vp.first != vp.second; ++vp.first) {
+	// 					std::cout << "going throught grph " << i << std::endl; ++i;
+					typename bettergraph::PseudoGraph<VertexType, EdgeType>::Vertex v = *vp.first;
+					
+					std::pair< 
+						typename bettergraph::PseudoGraph<VertexType, EdgeType>::VertexIterator, 
+						typename bettergraph::PseudoGraph<VertexType, EdgeType>::VertexIterator 
+					> vp2;
+					for (vp2 = vp; vp2.first != vp2.second; ++vp2.first) {
+	// 					std::cout << "going throught grph " << i << std::endl; ++i;
+						typename bettergraph::PseudoGraph<VertexType, EdgeType>::Vertex v2 = *vp2.first;
+						if(vp2 != vp){
+// 							std::cout << "Not the same" << std::endl;
+// 							std::cout << this->_graph[v].x <<"=="<< this->_graph[v2].x <<"&&"<< this->_graph[v].y <<" == "<< this->_graph[v2].y << std::endl;
+							if (this->_graph[v].x == this->_graph[v2].x && this->_graph[v].y == this->_graph[v2].y){
+								return false;
+							}
+						}
+						else{
+// 							std::cout << "SKIP" << std::endl;
+						}
+					}
+				}
+				
+				return true;
+			
+			}
+			
+			
+			
 		};
+		
+		
+		
+		
+		
+	
+		
 		
 		template<typename VertexType, typename EdgeType>
 		inline void LineFollowerGraphCorners<VertexType, EdgeType>::lineThinningAlgo(Vertex& index_dad){
@@ -73,6 +123,9 @@ namespace AASS{
 			Vertex dad_vertex = index_dad;
 			while(this->_LP.x != -1 && this->_LP.y != -1){
 
+				
+				assert(testNoDuplicate() == true);
+				
 				std::vector<cv::Point2i> all_point;
 				bool non_dead_end = this->findNextLPRP(all_point);
 				
@@ -109,20 +162,27 @@ namespace AASS{
 					Vertex new_dad;
 					//I used just a certain number of move but it should use the number of move + the distance travelled by the edge for more robustness. To avoid useless self loops, the number of move needs to be above a certain threshold. Thanks to nature of the algorithm and the moveForward function, it _should_ be ok, by just considering that the bounding box needs to do at all least one jump forward.
 					bool already_exist = this->loopDetection(new_p, new_dad);
+					
+// 					std::cout << "Testing existance of " << new_p << " : " << already_exist << std::endl;
 
 					//New intersection
 					if(already_exist == false){
 						if(iscorner == true){
 							assert(corner_turn.x != -1);
 							assert(corner_turn.y != -1);
+// 							std::cout << "Corner ! " << corner_turn << std::endl;;
 							this->addVertex(dad_vertex, new_dad, corner_turn);
 							_last_Ws.clear();
 							
 						}
 						else{
+// 							std::cout << "not a Corner ! " << std::endl;;
 							this->addVertex(dad_vertex, new_dad);
 							_last_Ws.clear();
 						}
+						
+						//TODO : remove the test
+						
 					}
 					//Not a new intersection but still an intersection
 					else{
@@ -140,6 +200,8 @@ namespace AASS{
 					
 					this->addPoint2Explore(all_point, new_dad);
 					this->getNewBranch(dad_vertex);
+					
+					assert(testNoDuplicate() == true);
 					
 					cv::Point2i p;
 					cv::Size s;
@@ -291,8 +353,8 @@ namespace AASS{
 				
 				
 				if(ac <= (M_PI  / 2) + 0.25 && ac > (M_PI  / 2) - 0.25){
-					std::cout << "ac " << ac << "\n" ;
-					std::cout << ac << " >= " << (M_PI  / 2) + 0.2 << " && " << ac << " < " << (M_PI  / 2) - 0.2 << std::endl;
+// 					std::cout << "ac " << ac << "\n" ;
+// 					std::cout << ac << " >= " << (M_PI  / 2) + 0.2 << " && " << ac << " < " << (M_PI  / 2) - 0.2 << std::endl;
 // 					int a;
 // 					std::cin >> a;
 // 					std::cout << "Return true" << std::endl;

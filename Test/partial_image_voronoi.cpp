@@ -3,6 +3,23 @@
 // 
 int main(){
 	
+	cv::Mat map = cv::imread("../Test/map.png", CV_LOAD_IMAGE_GRAYSCALE);
+	AASS::vodigrex::ThinkerVoronoi thinker_map;
+	thinker_map.setLevel(1);
+	thinker_map.think(map);
+	cv::Mat result_t_map;
+	thinker_map.getResult().copyTo(result_t_map);
+	cv::imshow("Voronoi", result_t_map);
+	cv::waitKey(0);
+	
+	AASS::vodigrex::ThinkerVoronoi thinker_map2;
+	thinker_map2.setLevel(30);
+	thinker_map2.think(map);
+	cv::Mat result_t_map2;
+	thinker_map2.getResult().copyTo(result_t_map2);
+	cv::imshow("Voronoi2", result_t_map2);
+	cv::waitKey(0);
+	
 	
 	cv::Mat line = cv::imread("../Test/ObstacleMap111.png", CV_LOAD_IMAGE_GRAYSCALE);
 	cv::Mat line_base;
