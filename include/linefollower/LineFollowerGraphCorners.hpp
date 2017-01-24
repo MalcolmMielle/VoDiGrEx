@@ -47,9 +47,10 @@ namespace AASS{
 			
 			
 		public:
-			LineFollowerGraphCorners() : _deviation_angle_in_rad(1.5), _max_distance_bounding_box(10){};
+			LineFollowerGraphCorners() : _deviation_angle_in_rad(1.5), _max_distance_bounding_box(20){};
 
 			void setMaxDeviation(double dev){_deviation_angle_in_rad = dev;};
+			void setMinNumberOfBoundingBox(int min){assert(min < 3); _max_distance_bounding_box = min;}
 			
 		protected:
 			void lineThinningAlgo(Vertex& index_dad);
@@ -159,6 +160,9 @@ namespace AASS{
 
 				//Intersection or dead end or corner
 				if( all_point.size() > 2 || non_dead_end == false || iscorner == true){
+					
+// 					cv::waitKey(0);
+					
 					Vertex new_dad;
 					//I used just a certain number of move but it should use the number of move + the distance travelled by the edge for more robustness. To avoid useless self loops, the number of move needs to be above a certain threshold. Thanks to nature of the algorithm and the moveForward function, it _should_ be ok, by just considering that the bounding box needs to do at all least one jump forward.
 					bool already_exist = this->loopDetection(new_p, new_dad);
@@ -196,6 +200,7 @@ namespace AASS{
 						}
 		// 				std::cout << "Clear" << std::endl;
 						this->_line.clear();
+						_last_Ws.clear();
 					}
 					
 					this->addPoint2Explore(all_point, new_dad);
@@ -323,6 +328,31 @@ namespace AASS{
 				cv::Size s_middle;
 				_last_Ws[(_last_Ws.size()/2) - 1].locateROI(s_middle, p_middle);
 				
+				
+				
+				//////////////////////////////DEBUG draw
+				
+// 				cv::Mat line;
+// 				this->_map_in.copyTo(line);
+// // 				line.setTo(cv::Scalar(0));
+// 				cv::Point pp; pp.x = p.x + this->_W.rows; pp.y = p.y + this->_W.cols;
+// 				cv::rectangle(line, p, pp, cv::Scalar(100, 50, 0), 5);
+// 				
+// 				cv::Point ppp; ppp.x = p_middle.x + _last_Ws[(_last_Ws.size()/2) - 1].rows; ppp.y = p_middle.y + _last_Ws[(_last_Ws.size()/2) - 1].cols;
+// 				cv::rectangle(line, p_middle, ppp, cv::Scalar(100, 50, 0), 5);
+// 				
+// 				cv::Point pppp; pppp.x = p_end.x + _last_Ws[0].rows; pppp.y = p_end.y + _last_Ws[0].cols;
+// 				cv::rectangle(line, p_end, pppp, cv::Scalar(100, 50, 0), 5);
+// 				
+// // 				bettergraph::PseudoGraph<AASS::vodigrex::SimpleNode, AASS::vodigrex::SimpleEdge> graph11 = llll_3.getGraph(i);
+// 		
+// 				AASS::vodigrex::draw<AASS::vodigrex::SimpleNode, AASS::vodigrex::SimpleEdge>(this->_graph, line);
+// 				
+// 				cv::imshow("tmp, lines", line);
+// 				cv::waitKey(1);
+// 				
+				////////////////////////////////////
+				
 				float first_direction[2]; 
 				first_direction[0] = p_middle.x - p_end.x; 
 				first_direction[1] = p_middle.y - p_end.y;
@@ -335,35 +365,48 @@ namespace AASS{
 				
 				//Reference vector
 				float second_direction_norm = std::sqrt( ( second_direction[0] * second_direction[0] ) + ( second_direction[1] * second_direction[1] ) );
+				
+				first_direction[0] = first_direction[0] / direction_norm;
+				first_direction[1] = first_direction[1] / direction_norm;
+				second_direction[1] = second_direction[1] / second_direction_norm;
+				second_direction[0] = second_direction[0] / second_direction_norm;
 
 				cv::Mat AA(1, 2, CV_32FC1, first_direction);
 				cv::Mat BB(1, 2, CV_32FC1, second_direction);
 				
 				double d = AA.dot(BB);
-				double l = direction_norm * second_direction_norm;			
+// 				double l = direction_norm * second_direction_norm;	
+				
+				//Truncating
+// 				std::cout << "Value before " <<  d  << std::endl;
+				d = d * 1000;
+// 				std::cout << "Value before " <<  d  << std::endl;
+				int d_temp = d;
+// 				std::cout << "Value before " <<  d_temp  << std::endl;
+				d = d_temp;
+// 				std::cout << "Value before " <<  d  << std::endl;
+				d = d / 1000;
+// 				int l_temp = l * 4;
+// 				l = l_temp;
 				
 // 				std::cout <<" Center : " << p << " points " <<this->_LP << " " << all_point[0] << " Size " << this->_W.size()  <<std::endl;
 // 				std::cout <<" Center : " << p << " points " << _direction_base[0] << ":" << _direction_base[1] << " " << b[0] << ":" << b[1] << " distance " << distance <<std::endl;
 // 				std::cout << "Norms a b " << direction_norm << " " << b_norm << std::endl;
 // 				std::cout << " d : " << d << " norm " << l << std::endl;
-				double ac = d/l;
+// 				double ac = d/l;
+				
+				double ac = d;
+// 				std::cout << "Value before acos " << ac << " " << d  << std::endl;
+				assert(ac<=1); assert(ac >= -1);
 				//Angle between reference direction and old direction
 				ac = std::acos(ac);
-				
-				
-				
-				if(ac <= (M_PI  / 2) + 0.25 && ac > (M_PI  / 2) - 0.25){
-// 					std::cout << "ac " << ac << "\n" ;
-// 					std::cout << ac << " >= " << (M_PI  / 2) + 0.2 << " && " << ac << " < " << (M_PI  / 2) - 0.2 << std::endl;
-// 					int a;
-// 					std::cin >> a;
-// 					std::cout << "Return true" << std::endl;
-					
-// 					Eigen::Vector3d ray_direction; ray_direction << _direction_base[0], _direction_base[1], 0;
-// 					Eigen::Vector3d ray_point; ray_point << _key_point.x, _key_point.y, 0;
-// 					Eigen::Vector3d ray_direction_second; ray_direction_second << ;
-// 					Eigen::Vector3d ray_point_second; ray_point_second << ;
-					
+// 				std::cout << ac << " " << d << std::endl;
+				assert(ac >= 0);
+				assert(ac <= M_PI);
+
+// 				if(ac <= (M_PI  / 2) + 0.25 && ac > (M_PI  / 2) - 0.25){
+				//If the line change by more than 25deg.
+				if(ac >= M_PI / 4){
 					corner_out = p_middle;
 					return true;
 					
@@ -374,109 +417,6 @@ namespace AASS{
 				return false;
 				
 			}
-			
-			
-			
-			
-// 			cv::Point2i p;
-// 			cv::Size s;
-// 			this->_W.locateROI(s, p);
-// 			double firsty = (p.x - _key_point.x)*(p.x - _key_point.x);
-// 			double secondy = (p.y - _key_point.y)*(p.y - _key_point.y);
-// // 			std::cout << "fand s : " <<firsty << " and " << secondy << std::endl;
-// 			int distance = std::sqrt(firsty + secondy);
-// 			
-// // 			std::cout << " distance " << distance <<std::endl;
-// // 			std::cout <<" Center< : " << p << " keypoint" << _key_point << std::endl;
-// 			
-// 			//If it needs to be initialized
-// 			if(distance > 5 && _direction_init == true){
-// // 				std::cout << " INIT" << std::endl;
-// 				_direction_base[0] = p.x - _key_point.x;
-// 				_direction_base[1] = p.y - _key_point.y;
-// 				_direction_init = false;
-// // // 				std::cout <<" Center< : " << p << " keypoint" << _key_point << " points " << _direction_base[0] << ":" << _direction_base[1] << " distance " << distance <<std::endl;
-// // 				int a;
-// // 				std::cin >> a;
-// 			}
-// 			//Not too short;
-// 			if(distance > 5){
-// 				
-// 				
-// // 				cv::Mat print;
-// // 				this->_map_in.copyTo(print);
-// // 				cv::Size s2;
-// // 				cv::Point2i p_dyn_window2;
-// // 				this->_W.locateROI(s2, p_dyn_window2);
-// // 				cv::Point2i second_point = p_dyn_window2;
-// // 				second_point.x = second_point.x + this->_W.size().width;
-// // 				second_point.y = second_point.y + this->_W.size().height;
-// // 				cv::rectangle( print, p_dyn_window2, second_point, cv::Scalar( 255 ), 1, 4 );
-// // 				cv::circle(print, _key_point, 5, cv::Scalar(200), 3);
-// // 				cv::Point2i tmp;
-// // 				
-// // 				cv::circle(print, p, 5, cv::Scalar(255), 3);
-// // 				cv::imshow("tmp", print);
-// // 				
-// // 				bettergraph::PseudoGraph<VertexType, EdgeType> graph = this->getGraph();
-// // 				cv::Mat maa_3 = this->_map_in.clone();
-// // 				maa_3.setTo(cv::Scalar(0));
-// // 				AASS::vodigrex::draw<VertexType, EdgeType>(graph, maa_3);
-// // 				cv::imshow("tmp CORNER", maa_3);
-// // 				
-// // 				cv::waitKey(0);
-// 				
-// 				
-// // 				cv::imshow("Dyn", this->_W);
-// // 				cv::waitKey(0);
-// 				
-// 				//Current vector
-// 				float b[2] = {p.x - _key_point.x, p.y - _key_point.y};
-// 				//Reference vector
-// 				float direction_norm = std::sqrt(_direction_base[0]*_direction_base[0] + _direction_base[1]*_direction_base[1]);
-// 				float b_norm = std::sqrt(b[0]*b[0] + b[1]*b[1]);
-// 
-// 				cv::Mat AA(1,2,CV_32FC1,_direction_base);
-// 				cv::Mat BB(1,2,CV_32FC1,b);
-// 				
-// 				double d = AA.dot(BB);
-// 				double l = direction_norm * b_norm;			
-// 				
-// // 				std::cout <<" Center : " << p << " points " <<this->_LP << " " << all_point[0] << " Size " << this->_W.size()  <<std::endl;
-// 
-// // 				std::cout <<" Center : " << p << " points " << _direction_base[0] << ":" << _direction_base[1] << " " << b[0] << ":" << b[1] << " distance " << distance <<std::endl;
-// // 				std::cout << "Norms a b " << direction_norm << " " << b_norm << std::endl;
-// // 				std::cout << " d : " << d << " norm " << l << std::endl;
-// 				double ac = d/l;
-// 				//Angle between reference direction and old direction
-// 				ac = std::acos(ac);
-// // 				std::cout << "Angle : "<< ac << " conmpare to " << (M_PI  / 2) << std::endl;
-// 				
-// 				//If to long distance: update the keypoint so the vector we compare grow forward
-// 				if(distance > 20){
-// 					_direction_base[0] = p.x - _key_point.x;
-// 					_direction_base[1] = p.y - _key_point.y;
-// 					_key_point = p;
-// // 					std::cout <<" New keypoint : " << p << " keypoint" << _key_point <<std::endl;
-// // 					int a;
-// // 					std::cin >> a;
-// 				}
-// 				
-// 				if(ac >= _deviation_angle_in_rad/* && ac < (M_PI  / 2) + 0.1*/){
-// // 					int a;
-// // 					std::cin >> a;
-// // 					std::cout << "Return true" << std::endl;
-// 					
-// 					Eigen::Vector3d ray_direction; ray_direction << _direction_base[0], _direction_base[1], 0;
-// 					Eigen::Vector3d ray_point; ray_point << _key_point.x, _key_point.y, 0;
-// 					Eigen::Vector3d ray_direction_second; ray_direction_second << ;
-// 					Eigen::Vector3d ray_point_second; ray_point_second << ;
-// 					
-// 					return true;
-// 				}
-// 				return false;
-// 				}
-
 
 			return false;
 
