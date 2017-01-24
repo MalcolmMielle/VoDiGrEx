@@ -4,6 +4,9 @@
 #include <opencv2/opencv.hpp>
 #include <bettergraph/PseudoGraph.hpp>
 
+// #include "SimpleNode.hpp"
+// #include "utils/Utils.hpp"
+
 namespace AASS{
 		
 	namespace vodigrex{
@@ -18,6 +21,8 @@ namespace AASS{
 		protected :
 			/// @brief deque of all topologicalmap::GraphList extracted from the image
 			std::deque< bettergraph::PseudoGraph<VertexType, EdgeType> > _dgraphlist;
+			///@brief deque with all the associated Mat for each graph
+			std::deque<cv::Mat> _map_results;
 			LineFollowerGraphType _line_follower;
 			
 		public :
@@ -29,7 +34,8 @@ namespace AASS{
 				_line_follower.inputMap(m);
 			}
 			/// @brief Return the cv::Mat result with the line drawn.
-			cv::Mat& getResult(){return _line_follower.getResult();}
+			cv::Mat& getResult(int i){return _map_results[i];}
+			const cv::Mat& getResult(int i) const {return _map_results[i];}
 			/// @brief Return unput cv::Mat
 			cv::Mat& getMatIn(){return _line_follower.getMatIn();}
 			void setD(int d){_line_follower.setD(d);}
@@ -89,17 +95,28 @@ namespace AASS{
 				bettergraph::PseudoGraph<VertexType, EdgeType> gl = _line_follower.getGraph();
 	// 			std::cout << "NUM VERT " << gl.getNumVertices() << std::endl;
 				_dgraphlist.push_back(gl);
+				cv::Mat res;
+				_line_follower.getResult().copyTo(res);
+// 				cv::imshow("res", _line_follower.getResult());
+// 				cv::waitKey(0);
+				_map_results.push_back(res);
+				
+				
+// 	// 			cv::Mat bug = cv::imread("../Test/Sequences/Seq1/0012.jpg");
+// 	// 			cv::Mat maa_3 = bug.clone();
+// 	// 			maa_3.setTo(cv::Scalar(0));
+// 	// 			gl.draw(maa_3);
+// 				cv::imshow("res2", res);
+// 	// 			std::cout << _graph.getNumVertices() << std::endl;
+// 				std::cout << "Size of : " <<_line_follower.getGraph().getNumVertices() << std::endl;
+// 				cv::waitKey(0);
+// 				cv::Mat maa_31 = this->_line_follower.getMatIn().clone();
+// 				maa_31.setTo(cv::Scalar(0));
+// 				AASS::vodigrex::draw<AASS::vodigrex::SimpleNode, AASS::vodigrex::SimpleEdge>(_line_follower.getGraph(), maa_31);
+// 				cv::imshow("graph11", maa_31);
+				
+				
 				_line_follower.clear();
-				
-				
-	// 			cv::Mat bug = cv::imread("../Test/Sequences/Seq1/0012.jpg");
-	// 			cv::Mat maa_3 = bug.clone();
-	// 			maa_3.setTo(cv::Scalar(0));
-	// 			gl.draw(maa_3);
-	// 			cv::imshow("res", maa_3);
-	// 			std::cout << _graph.getNumVertices() << std::endl;
-	// 			std::cout << "Size of : " << _dgraphlist.size() << std::endl;
-	// 			cv::waitKey(0);
 				
 				
 			}
@@ -113,6 +130,9 @@ namespace AASS{
 		template<typename VertexType, typename EdgeType, typename LineFollowerGraphType>
 		inline void MultipleLineFollowerBase<VertexType, EdgeType, LineFollowerGraphType>::sort()
 		{
+			
+			assert(_dgraphlist.size() == _map_results.size());
+			
 			//classify them in a clock wise manner
 			typename std::deque<	
 				bettergraph::PseudoGraph<VertexType, EdgeType>
@@ -122,20 +142,37 @@ namespace AASS{
 				bettergraph::PseudoGraph<VertexType, EdgeType>
 			>::iterator dgraph_ite_2;
 			
-			bettergraph::PseudoGraph<VertexType, EdgeType> copy;
+			typename std::deque<cv::Mat>::iterator map_ite;
+			typename std::deque<cv::Mat>::iterator map_ite_2;
 			
+			bettergraph::PseudoGraph<VertexType, EdgeType> copy;
+			cv::Mat map_copy;
+			
+			map_ite = _map_results.begin() + 1;
 			for(dgraph_ite =  _dgraphlist.begin()+1 ; dgraph_ite !=  _dgraphlist.end() ; dgraph_ite++){
 				
 				dgraph_ite_2 = dgraph_ite ;
 				copy = *dgraph_ite;
+				
+				map_ite_2 = map_ite;
+				(*map_ite).copyTo(map_copy);
+				
 		// 			std::cout << "tsart" << std::endl;
 		// 			std::cout << "something" <<  ( * (hypothesis_final_ite_2 - 1) ).getDist() << " < " << (*hypothesis_final_ite_2).getDist()  << std::endl;
 				while( dgraph_ite_2 !=  _dgraphlist.begin() && (*(dgraph_ite_2 - 1)).getNumVertices() < copy.getNumVertices()){
 
 					*( dgraph_ite_2 ) = *( dgraph_ite_2-1 );
 					dgraph_ite_2 = dgraph_ite_2 - 1;
+					
+					(*(map_ite_2-1)).copyTo(*map_ite_2);
+					map_ite_2 = map_ite_2 - 1;
 				}
+				
 				*(dgraph_ite_2) = copy;
+				map_copy.copyTo(*map_ite_2);
+				
+				map_ite++;
+				
 			}
 
 		}
