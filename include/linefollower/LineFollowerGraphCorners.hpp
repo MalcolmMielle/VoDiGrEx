@@ -49,8 +49,10 @@ namespace AASS{
 		public:
 			LineFollowerGraphCorners() : _deviation_angle_in_rad(1.5), _max_distance_bounding_box(20){};
 
+// 			TODO : change name 
+			///@brief Set the minimum deviation before a line because a corner. In Rad.
 			void setMaxDeviation(double dev){_deviation_angle_in_rad = dev;};
-			void setMinNumberOfBoundingBox(int min){assert(min < 3); _max_distance_bounding_box = min;}
+			void setMinNumberOfBoundingBox(int min){assert(min > 3); _max_distance_bounding_box = min;}
 			
 		protected:
 			void lineThinningAlgo(Vertex& index_dad);
