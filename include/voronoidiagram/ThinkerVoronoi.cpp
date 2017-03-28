@@ -69,7 +69,7 @@ void AASS::vodigrex::ThinkerVoronoi::voronoi(const cv::Mat& mapin)
 		mapin.copyTo(_voronoi);
 	}
 	
-// 	cv::imshow("That voro", _map_in);
+// 	cv::imshow("Src", _map_in);
 // 	cv::waitKey(0);
 	
 	cv::threshold(_voronoi, _voronoi, 50, 255, CV_THRESH_BINARY_INV);
@@ -85,8 +85,8 @@ void AASS::vodigrex::ThinkerVoronoi::voronoi(const cv::Mat& mapin)
 	else{
 		cv::distanceTransform(_voronoi, _voronoi, _label, CV_DIST_L2, CV_DIST_MASK_PRECISE, CV_DIST_LABEL_CCOMP);
 	}
-// 	std::cout << "Voronoi " << std::endl << _voronoi << std::endl;
 	
+// 	cv::normalize(_voronoi, _voronoi, 0, 1., cv::NORM_MINMAX);
 // 	cv::imshow("That voro", _voronoi);
 // 	cv::waitKey(0);
 
@@ -177,6 +177,16 @@ void AASS::vodigrex::ThinkerVoronoi::voronoiLaplaceVoro()
 	 * METHOD 1
 	 */
 	cv::Laplacian(_voronoi, this->_map_result, -1);
+	
+// 	cv::Mat cop;
+// 	this->_map_result.copyTo(cop);
+// 	cv::normalize(cop, cop, 0, 255, cv::NORM_MINMAX);
+	
+// 	cv::Mat invSrc =  cv::Scalar::all(255) - cop;
+// 	cv::normalize(invSrc, invSrc, 0, 1., cv::NORM_MINMAX);
+	
+// 	cv::imshow("Laplacian", invSrc);
+// 	cv::waitKey(0);
 
 	/*
 	* METHOD 2
@@ -234,6 +244,15 @@ void AASS::vodigrex::ThinkerVoronoi::voronoiLaplaceVoro()
 				 * * pixel_value is replace by level.
 				 * 
 				 * And then the full imaged is treshold keeping all value above 0.
+				 * 
+				 * Propotionality tables
+				 * 
+				 * value pix   perc
+				 * 30max       30
+				 * -min(max)   100
+				 * 
+				 * 30max       1
+				 * val         more than 30max > 1 ; less than 20max < 1
 				 */
 				
 				int level =  level_tmp * ( - this->_map_result.at<float>(i, j) );
@@ -243,6 +262,9 @@ void AASS::vodigrex::ThinkerVoronoi::voronoiLaplaceVoro()
 	}
 	cv::threshold(this->_map_result, this->_map_result, 0, 255, CV_THRESH_BINARY);
 	this->_map_result.convertTo(this->_map_result, CV_8U);
+	
+// 	cv::imshow("EVD", this->_map_result);
+// 	cv::waitKey(0);
 	
 // 	std::cout << "FINAL  " << this-> _map_result;
 		
