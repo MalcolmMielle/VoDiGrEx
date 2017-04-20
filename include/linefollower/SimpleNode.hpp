@@ -22,6 +22,7 @@ namespace AASS{
 			float x;
 			float y;
 			SimpleNode(){};
+			SimpleNode(const SimpleNode& s){x = s.getX();y = s.getY();}
 			float getX() const {return x;}
 			float getY() const {return y;}
 			void setX(float xx){ x = xx;}
