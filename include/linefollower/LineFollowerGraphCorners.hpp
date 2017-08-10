@@ -47,12 +47,14 @@ namespace AASS{
 			
 			
 		public:
-			LineFollowerGraphCorners() : _deviation_angle_in_rad(1.5), _max_distance_bounding_box(20){};
+			LineFollowerGraphCorners() : _deviation_angle_in_rad(M_PI / 4), _max_distance_bounding_box(20){};
 
 // 			TODO : change name 
 			///@brief Set the minimum deviation before a line because a corner. In Rad.
 			void setMaxDeviation(double dev){_deviation_angle_in_rad = dev;};
 			void setMinNumberOfBoundingBox(int min){assert(min > 3); _max_distance_bounding_box = min;}
+			
+			void print(){std::cout << "LF :-> deviation " << _deviation_angle_in_rad << " max dist bounding box " << _max_distance_bounding_box << std::endl; }
 			
 		protected:
 			void lineThinningAlgo(Vertex& index_dad);
@@ -312,7 +314,9 @@ namespace AASS{
 		inline bool LineFollowerGraphCorners<VertexType, EdgeType>::directionChanged(cv::Point2f& corner_out){
 			_last_Ws.push_back(this->_W);
 			
-			if(_last_Ws.size() > _max_distance_bounding_box){
+			assert(_max_distance_bounding_box >= 0);
+			
+			if(_last_Ws.size() > (unsigned int) _max_distance_bounding_box){
 				
 				_last_Ws.pop_front();
 				
@@ -408,7 +412,7 @@ namespace AASS{
 
 // 				if(ac <= (M_PI  / 2) + 0.25 && ac > (M_PI  / 2) - 0.25){
 				//If the line change by more than 25deg.
-				if(ac >= M_PI / 4){
+				if(ac >= _deviation_angle_in_rad){
 					corner_out = p_middle;
 					return true;
 					

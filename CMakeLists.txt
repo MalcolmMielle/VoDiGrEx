@@ -5,7 +5,7 @@ cmake_minimum_required(VERSION 2.6)
 project(vodigrex)
 
 
-# add_definitions(-std=c++11)
+add_definitions(-std=c++11)
 
 SET(CMAKE_CXX_FLAGS "-Wall")
 

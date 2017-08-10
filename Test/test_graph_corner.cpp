@@ -16,9 +16,31 @@ int main(){
 			> 
 		> llll_3;
 
+		AASS::vodigrex::LineFollowerGraphCorners<
+			AASS::vodigrex::SimpleNode, 
+			AASS::vodigrex::SimpleEdge
+			> graph_corners;
+		graph_corners.setD(2);
+		graph_corners.setMaxDeviation((45 * M_PI) / 180);
+		graph_corners.inputMap(line);
+		
+		graph_corners.print();
+		
+		graph_corners.thin();
+		auto prior_graph = graph_corners.getGraph();
+		
+		cv::Mat maa_31 = line.clone();
+		AASS::vodigrex::draw<AASS::vodigrex::SimpleNode, AASS::vodigrex::SimpleEdge>(prior_graph, maa_31);
+		std::cout << "Number of nodes " << prior_graph.getNumVertices() << std::endl;
+		cv::imshow("graph", maa_31);
+		cv::waitKey(0);
 
 	llll_3.setD(2);
+// 	llll_3.getLineFollower().setMaxDeviation((80 * M_PI) / 180);
 	llll_3.inputMap(line);
+	
+	llll_3.getLineFollower().print();
+	
 	llll_3.thin();
 	
 // 	llll_3.printGraph();

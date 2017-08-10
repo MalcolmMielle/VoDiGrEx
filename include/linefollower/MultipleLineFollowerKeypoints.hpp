@@ -43,6 +43,8 @@ namespace AASS{
 			void push_back(const cv::Point& d1, const cv::Point& d){_line_follower.push_back(d1, d);}
 			int sizeDoor(){return _line_follower.sizeDoor();}
 			
+			size_t size(){return _dgraphlist.size();}
+			
 			/**
 			* @brief thinning algorithm
 			* 

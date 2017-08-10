@@ -33,6 +33,9 @@ namespace AASS{
 			void inputMap(const cv::Mat& m){
 				_line_follower.inputMap(m);
 			}
+			
+			LineFollowerGraphType& getLineFollower(){return _line_follower;}
+			
 			/// @brief Return the cv::Mat result with the line drawn.
 			cv::Mat& getResult(int i){return _map_results[i];}
 			const cv::Mat& getResult(int i) const {return _map_results[i];}
