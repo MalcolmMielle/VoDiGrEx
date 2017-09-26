@@ -32,17 +32,17 @@ include_directories("${PROJECT_BINARY_DIR}" ${CMAKE_CURRENT_BINARY_DIR}
 	include include/voronoidiagram/ include/linefollower/
 )
 
-add_library(EVGthin
+add_library(EVGthin SHARED
 			include/Evg_thin/evg-thin.cc
 			)
 
-add_library(Voronoi 
+add_library(Voronoi SHARED
 			include/voronoidiagram/ThinkerVoronoi.cpp
 			include/voronoidiagram/ThinkerEVG.cpp
 			)
 target_link_libraries(Voronoi ${OpenCV_LIBS})
 
-add_library(LineFollower 
+add_library(LineFollower SHARED
 			include/linefollower/LineFollower.cpp
 			)
 target_link_libraries(Voronoi ${OpenCV_LIBS})
