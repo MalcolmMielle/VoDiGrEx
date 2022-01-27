@@ -3,7 +3,7 @@
 // 
 int main(){
 	
-	cv::Mat map = cv::imread("../Test/map.png", CV_LOAD_IMAGE_GRAYSCALE);
+	cv::Mat map = cv::imread("../Test/map.png", cv::ImreadModes::IMREAD_GRAYSCALE);
 	AASS::vodigrex::ThinkerVoronoi thinker_map;
 	thinker_map.setLevel(1);
 	thinker_map.think(map);
@@ -21,7 +21,7 @@ int main(){
 	cv::waitKey(0);
 	
 	
-	cv::Mat line = cv::imread("../Test/ObstacleMap111.png", CV_LOAD_IMAGE_GRAYSCALE);
+	cv::Mat line = cv::imread("../Test/ObstacleMap111.png", cv::ImreadModes::IMREAD_GRAYSCALE);
 	cv::Mat line_base;
 	line.copyTo(line_base);
 	cv::imshow("base", line);
@@ -41,7 +41,7 @@ int main(){
 	
 // 	cv::waitKey(0);
 	
-	cv::Mat line_modified = cv::imread("../Test/ObstacleMap1_modifed.png", CV_LOAD_IMAGE_GRAYSCALE);
+	cv::Mat line_modified = cv::imread("../Test/ObstacleMap1_modifed.png", cv::ImreadModes::IMREAD_GRAYSCALE);
 	cv::imshow("base_modified", line_modified);
 // 	cv::waitKey(0);
 	AASS::vodigrex::ThinkerVoronoi thinker_modified;

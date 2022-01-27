@@ -5,7 +5,7 @@
 int main(){
 	
 	AASS::vodigrex::MultipleLineFollower<> llll_3;
-	cv::Mat bug = cv::imread("../Test/buildingline.png", CV_LOAD_IMAGE_GRAYSCALE);
+	cv::Mat bug = cv::imread("../Test/buildingline.png", cv::ImreadModes::IMREAD_GRAYSCALE);
 	
 	bug.convertTo(bug, CV_8U);
 

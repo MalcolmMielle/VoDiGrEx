@@ -67,7 +67,7 @@ namespace AASS{
 				cv::Mat tmp, tmp2;
 				
 				if(m.channels() == 3){
-					cv::cvtColor(m, tmp2, CV_RGB2GRAY);
+					cv::cvtColor(m, tmp2, cv::COLOR_RGB2GRAY);
 				}
 				else{
 					m.copyTo(tmp2);
