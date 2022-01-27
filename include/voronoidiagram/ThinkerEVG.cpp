@@ -10,7 +10,7 @@ void AASS::vodigrex::ThinkerEVG::think(const cv::Mat& map_in)
 	
 	cv::Mat chan1;
 	if(_map_in.channels() == 3){
-		cv::cvtColor(_map_in, chan1, CV_RGB2GRAY);
+		cv::cvtColor(_map_in, chan1, cv::COLOR_RGB2GRAY);
 	}
 	else{
 		map_in.copyTo(chan1);

@@ -63,7 +63,7 @@ void AASS::vodigrex::ThinkerVoronoi::voronoi(const cv::Mat& mapin)
 // 	cv::waitKey(0);
 	
 	if(mapin.channels() == 3){
-		cv::cvtColor(mapin, _voronoi, CV_RGB2GRAY);
+		cv::cvtColor(mapin, _voronoi, cv::COLOR_RGB2GRAY);
 	}
 	else{
 		mapin.copyTo(_voronoi);
@@ -72,18 +72,18 @@ void AASS::vodigrex::ThinkerVoronoi::voronoi(const cv::Mat& mapin)
 // 	cv::imshow("Src", _map_in);
 // 	cv::waitKey(0);
 	
-	cv::threshold(_voronoi, _voronoi, 50, 255, CV_THRESH_BINARY_INV);
+	cv::threshold(_voronoi, _voronoi, 50, 255, cv::THRESH_BINARY_INV);
 	
 	std::cout << "distance transform" << std::endl;
 	//Laplace use a pixel distance instead of the Euclidean one
 	if(this->_mode == 4){
 // 		Pixel distance give way to good result for sketch map but is PERFECT for building maps.
 // 		cv::distanceTransform(_voronoi, _voronoi, _label, CV_DIST_C, CV_DIST_MASK_PRECISE, CV_DIST_LABEL_CCOMP);
-		cv::distanceTransform(_voronoi, _voronoi, _label, CV_DIST_L2, CV_DIST_MASK_PRECISE, CV_DIST_LABEL_CCOMP);
+		cv::distanceTransform(_voronoi, _voronoi, _label, cv::DIST_L2, cv::DIST_MASK_PRECISE, cv::DIST_LABEL_CCOMP);
 	}
 	//Euclidean distance
 	else{
-		cv::distanceTransform(_voronoi, _voronoi, _label, CV_DIST_L2, CV_DIST_MASK_PRECISE, CV_DIST_LABEL_CCOMP);
+		cv::distanceTransform(_voronoi, _voronoi, _label, cv::DIST_L2, cv::DIST_MASK_PRECISE, cv::DIST_LABEL_CCOMP);
 	}
 	
 // 	cv::normalize(_voronoi, _voronoi, 0, 1., cv::NORM_MINMAX);
@@ -260,7 +260,7 @@ void AASS::vodigrex::ThinkerVoronoi::voronoiLaplaceVoro()
 			}
 		}
 	}
-	cv::threshold(this->_map_result, this->_map_result, 0, 255, CV_THRESH_BINARY);
+	cv::threshold(this->_map_result, this->_map_result, 0, 255, cv::THRESH_BINARY);
 	this->_map_result.convertTo(this->_map_result, CV_8U);
 	
 // 	cv::imshow("EVD", this->_map_result);
@@ -654,8 +654,8 @@ void AASS::vodigrex::ThinkerVoronoi::localMaximaCombo()
 
 void AASS::vodigrex::ThinkerVoronoi::skeleton()
 {
-	cv::cvtColor(this->_map_in, _voronoi, CV_RGB2GRAY);
-	cv::threshold(_voronoi, _voronoi, 10, 255, CV_THRESH_BINARY_INV);
+	cv::cvtColor(this->_map_in, _voronoi, cv::COLOR_RGB2GRAY);
+	cv::threshold(_voronoi, _voronoi, 10, 255, cv::THRESH_BINARY_INV);
 	
 	cv::Mat eroded;
 	cv::Mat temp;

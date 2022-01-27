@@ -17,7 +17,7 @@ SET(CMAKE_CXX_FLAGS_DEBUG  "-DDEBUG -g")
 find_package( OpenCV REQUIRED)
 
 find_package(Eigen3 REQUIRED)
-include_directories(${EIGEN_INCLUDE_DIRS})
+include_directories(${EIGEN_INCLUDE_DIRS} ${OpenCV_INCLUDE_DIRS})
 add_definitions(${EIGEN_DEFINITIONS})
 
 find_package( bettergraph REQUIRED)
@@ -30,7 +30,7 @@ endif()
 
 include_directories("${PROJECT_BINARY_DIR}" ${CMAKE_CURRENT_BINARY_DIR}  
 	include include/voronoidiagram/ include/linefollower/
-)
+  )
 
 add_library(EVGthin SHARED
 			include/Evg_thin/evg-thin.cc
